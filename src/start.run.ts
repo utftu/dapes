@@ -1,10 +1,12 @@
+import { Group } from "./group.ts";
+import { start } from "./start.ts";
 import { Task } from "./task.ts";
 
 const build = new Task({
   name: "build",
   parents: [],
-  exec: () => {
-    console.log("build");
+  exec: ({ task }) => {
+    console.log(task.prefix + "build");
   },
 });
 
@@ -27,4 +29,9 @@ const run = new Task({
   },
 });
 
-run.run();
+start(
+  new Group({
+    tasks: [run, build, test],
+    subgroups: [],
+  })
+);

@@ -1,100 +1,38 @@
-type Exec<TValue = any> = (ctx: ExecCtx) => TValue | Promise<TValue>;
+const prefix = "\x1b[32m[worker]\x1b[0m ";
 
-type ExecCtx = {
-  task: Task;
-  parentResults: ExecResulCtx[];
-};
+const tee = async (
+  read: ReadableStream<Uint8Array>,
+  write: (text: string) => void,
+  prefix: string
+) => {
+  const reader = read.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let leftover = "";
 
-type ExecResulCtx<TValue = any> = {
-  task: Task;
-  result: TValue;
-};
-
-const makeBlue = (text: string) => "\x1b[36m" + text + "\x1b[0m";
-
-type Unmount = () => void | Promise<void>;
-
-class Task<TValue = any> {
-  name: string;
-  exec: Exec<TValue>;
-
-  parents: Task[] = [];
-  children: Task[] = [];
-
-  abortController = new AbortController();
-  promise?: Promise<TValue>;
-
-  unmounts: Unmount[] = [];
-
-  constructor({
-    name,
-    parents,
-    exec,
-  }: {
-    name: string;
-    parents: Task[];
-    exec: Exec<TValue>;
-  }) {
-    this.name = name;
-    this.parents = parents;
-    this.exec = exec;
-  }
-
-  async run(): Promise<TValue> {
-    if (this.promise) {
-      return this.promise;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      if (leftover) write(prefix + leftover + "\n");
+      break;
     }
 
-    const parentsResults = await Promise.all(
-      this.parents.map(async (task) => ({
-        result: await task.run(),
-        task,
-      }))
-    );
+    const chunk = decoder.decode(value, { stream: true });
+    const lines = (leftover + chunk).split("\n");
 
-    if (this.promise) {
-      return this.promise;
+    leftover = lines.pop() ?? "";
+
+    for (const line of lines) {
+      write(prefix + line + "\n");
     }
-
-    console.log(makeBlue(`[ ${this.name} ]`));
-
-    // console.log(makeBlue(`${this.name} start  ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓`));
-    const promise = this.exec({
-      task: this,
-      parentResults: parentsResults,
-    });
-    this.promise =
-      promise instanceof Promise ? promise : Promise.resolve(promise);
-
-    const value = await promise;
-
-    // console.log(makeBlue(`[ /${this.name} ]`));
-    // console.log(makeBlue(`${this.name} funish ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑`));
-
-    return value;
   }
-}
+};
 
-const build = new Task({
-  name: "build",
-  parents: [],
-  exec: () => {
-    console.log("build");
-  },
-});
-const test = new Task({
-  name: "test",
-  parents: [build],
-  exec: () => {
-    console.log("test");
-  },
-});
-const run = new Task({
-  name: "run",
-  parents: [build, test],
-  exec: () => {
-    console.log("run");
+// создаём поток из текста
+const input = new ReadableStream({
+  start(controller) {
+    controller.enqueue(new TextEncoder().encode("Hello\nWorld\n"));
+    controller.close();
   },
 });
 
-run.run();
+tee(input, (text) => process.stdout.write(text), prefix);

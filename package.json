@@ -9,5 +9,9 @@
   "peerDependencies": {
     "typescript": "^5",
     "ramm": "^0.0.25"
+  },
+  "dependencies": {
+    "argblock": "0.0.9",
+    "balg": "^0.0.2"
   }
 }
