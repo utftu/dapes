@@ -49,6 +49,7 @@ export const execCommand = async (
     stdin: "inherit",
     stdout: "pipe",
     stderr: "pipe",
+    signal: task.abortController.signal,
   });
 
   store.spawnResult = spawnResult;
@@ -77,3 +78,18 @@ export const commandRaw = async (command: string, task: Task) => {
 
   return resultPromise;
 };
+
+// const cancel = async (task: Task) => {
+//   if (
+//     task.status === "finished" ||
+//     task.status === "error" ||
+//     task.status === "cancelled"
+//   ) {
+//     return;
+//   }
+
+//   await Promise.all(task.unmounts.map((unmount) => unmount()));
+//   task.status = "cancelled";
+
+//   await Promise.all(task.parents.map(cancel));
+// };

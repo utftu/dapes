@@ -9,6 +9,7 @@ type ExecCtx = {
   task: Task;
   parentResults: ExecResulCtx[];
   command: (command: string) => ReturnType<typeof commandRaw>;
+  prefix: string;
 };
 
 type ExecResulCtx<TValue = any> = {

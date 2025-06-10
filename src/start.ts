@@ -1,6 +1,15 @@
 import type { Group } from "./group.ts";
 import { Block, parse, globalArg } from "argblock";
-import type { Task } from "./task.ts";
+import { Task } from "./task.ts";
+import { argv, pathToFileURL } from "bun";
+
+const defaultSelectTask = new Task({
+  name: "Default select task",
+  parents: [],
+  exec: ({ prefix }) => {
+    throw new Error(prefix + "Default task doesn't exist");
+  },
+});
 
 type Data = {
   task: Task;
@@ -19,13 +28,14 @@ const convertGroupToBlock = (group: Group) => {
 
   const subgrupBlocks: Block<Data>[] = group.subgroups.map((subgroup) => {
     const { subgrupBlocks, tasksBlocks } = convertGroupToBlock(subgroup.group);
+
     const block = new Block<Data>({
       arg: subgroup.name,
       description: "",
       params: [],
       children: [...tasksBlocks, ...subgrupBlocks],
       data: {
-        task: tasksBlocks[0]!.data.task,
+        task: tasksBlocks[0]?.data.task || defaultSelectTask,
       },
     });
     return block;
@@ -43,7 +53,7 @@ export const start = (group: Group) => {
     children: [...tasksBlocks, ...subgrupBlocks],
     params: [],
     data: {
-      task: tasksBlocks[0]!.data.task,
+      task: tasksBlocks[0]?.data.task || defaultSelectTask,
     },
   });
 
@@ -54,4 +64,10 @@ export const start = (group: Group) => {
   const task = parsedBlocks.at(-1)!.block.data.task;
 
   return task.run();
+};
+
+export const startIfMain = async (group: Group, meta: ImportMeta) => {
+  if (meta.url === pathToFileURL(argv[1] || "").href) {
+    await start(group);
+  }
 };

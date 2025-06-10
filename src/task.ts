@@ -1,6 +1,6 @@
 import { randomRgbTextStart } from "./color.ts";
 import { commandRaw } from "./command.ts";
-import type { Exec } from "./types.ts";
+import type { Exec, Unmount } from "./types.ts";
 
 export class Task<TValue = any> {
   name: string;
@@ -9,6 +9,9 @@ export class Task<TValue = any> {
 
   parents: Task[] = [];
   children: Task[] = [];
+
+  status: "init" | "running" | "finished" | "error" | "cancelled" = "init";
+  unmounts: Unmount[] = [];
 
   abortController = new AbortController();
   promise?: Promise<TValue>;
@@ -21,12 +24,12 @@ export class Task<TValue = any> {
 
   constructor({
     name,
-    parents,
+    parents = [],
     exec,
     description = "",
   }: {
     name: string;
-    parents: Task[];
+    parents?: Task[];
     exec: Exec<TValue>;
     description?: string;
   }) {
@@ -56,12 +59,34 @@ export class Task<TValue = any> {
       task: this,
       parentResults: parentsResults,
       command: (command: string) => commandRaw(command, this),
+      prefix: this.prefix,
     });
+
     this.promise =
       promise instanceof Promise ? promise : Promise.resolve(promise);
 
     const value = await promise;
 
     return value;
+  }
+
+  async cancel() {
+    if (
+      this.status === "finished" ||
+      this.status === "error" ||
+      this.status === "cancelled"
+    ) {
+      return;
+    }
+
+    await this.abort();
+
+    await Promise.all(this.parents.map((task) => task.cancel()));
+  }
+
+  async abort() {
+    this.abortController.abort();
+    await Promise.all(this.unmounts.map((unmount) => unmount()));
+    this.status = "cancelled";
   }
 }
