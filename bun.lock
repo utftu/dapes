@@ -5,13 +5,11 @@
       "name": "dape",
       "dependencies": {
         "argblock": "0.0.9",
-        "balg": "^0.0.2",
       },
       "devDependencies": {
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "ramm": "^0.0.25",
         "typescript": "^5",
       },
     },
@@ -23,13 +21,7 @@
 
     "argblock": ["argblock@0.0.9", "", {}, "sha512-vNpD8+1wpOsU4oznx7WW5cmSCIsRPRPtV9Jga3A8OOaWnXjWNUsc09qR9V9E4R9JYaOvmc+NZnTmeG3yzVEc4g=="],
 
-    "balg": ["balg@0.0.2", "", {}, "sha512-uUjUjRxS0G2r3bOJjH9me1FP6CTlpVAtgQdI6ItGi5Oq8l0qPcgX0okGp1rqLORiJtNhtA6zpbRV8QWaFuT0Vw=="],
-
     "bun-types": ["bun-types@1.2.14", "", { "dependencies": { "@types/node": "*" } }, "sha512-Kuh4Ub28ucMRWeiUUWMHsT9Wcbr4H3kLIO72RZZElSDxSu7vpetRvxIUDUaW6QtaIeixIpm7OXtNnZPf82EzwA=="],
-
-    "desy": ["desy@0.0.14", "", {}, "sha512-grrJLelgGT4r0A1Pkxc/P3XFoa5KhAlXuDcSnciIRXh6ySI0pLAll4ixgpyBDe3triYLwytGsEKjlP57FFG3IA=="],
-
-    "ramm": ["ramm@0.0.25", "", { "dependencies": { "desy": "^0.0.14" } }, "sha512-qGdPB1d2QCMJ7ASOmCA0fQU29WJG6puxIFXULeGE7g+e03/el8PsmbjzdKYSQpj6E7JmomDR8H12DmLZVZD9Yw=="],
 
     "typescript": ["typescript@5.8.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ=="],
 

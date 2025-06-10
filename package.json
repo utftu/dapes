@@ -3,15 +3,15 @@
   "module": "index.ts",
   "type": "module",
   "version": "0.0.1",
+  "main": "dist/dapes.js",
+  "types": "dist/types/dapes.d.ts",
+  "scripts": {
+    "build": "bun build ./src/dapes.ts --target bun --outdir ./dist && bun run types",
+    "types": "tsc --project tsconfig.types.json"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5",
-    "ramm": "^0.0.25"
-  },
-  "dependencies": {
+    "@types/bun": "latest",
     "argblock": "0.0.9",
-    "balg": "^0.0.2"
+    "typescript": "^5"
   }
 }
