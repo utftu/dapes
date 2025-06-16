@@ -8,7 +8,10 @@ export type Exec<TValue = any> = (ctx: ExecCtx) => TValue | Promise<TValue>;
 type ExecCtx = {
   task: Task;
   parentResults: ExecResulCtx[];
-  command: (command: string) => ReturnType<typeof commandRaw>;
+  command: (
+    command: string,
+    config?: { env?: Record<string, any> }
+  ) => ReturnType<typeof commandRaw>;
   prefix: string;
 };
 
@@ -16,3 +19,5 @@ type ExecResulCtx<TValue = any> = {
   task: Task;
   result: TValue;
 };
+
+export type Envs = Record<string, any>;

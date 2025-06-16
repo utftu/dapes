@@ -1,5 +1,6 @@
 import { spawn } from "bun";
 import type { Task } from "./task.ts";
+import type { Envs } from "./types.ts";
 
 const makeGreen = (text: string) => "\x1b[32m" + text + "\x1b[0m";
 
@@ -38,18 +39,26 @@ const teeStderr = (read: ReadableStream, prefix: string) =>
   tee(read, (text) => process.stderr.write(text), prefix);
 
 export type ExecCommandStore = { spawnResult?: ReturnType<typeof spawn> };
-export const execCommand = async (
-  command: string,
-  store: ExecCommandStore,
-  task: Task
-) => {
+export const execCommand = async ({
+  command,
+  store,
+  task,
+  env,
+}: {
+  command: string;
+  store: ExecCommandStore;
+  task: Task;
+  env?: Envs;
+}) => {
   process.stdout.write(task.prefix + makeGreen(command) + "\n");
 
+  console.log("-----", "env", env);
   const spawnResult = spawn(["bash", "-c", command], {
     stdin: "inherit",
     stdout: "pipe",
     stderr: "pipe",
     signal: task.abortController.signal,
+    env,
   });
 
   store.spawnResult = spawnResult;
@@ -68,9 +77,17 @@ export const execCommand = async (
   };
 };
 
-export const commandRaw = async (command: string, task: Task) => {
+export const commandRaw = async ({
+  command,
+  task,
+  env,
+}: {
+  command: string;
+  task: Task;
+  env?: Record<string, any>;
+}) => {
   const store: ExecCommandStore = {};
-  const resultPromise = execCommand(command, store, task);
+  const resultPromise = execCommand({ command, store, task, env });
 
   task.abortController.signal.addEventListener("abort", () => {
     store.spawnResult!.kill();
@@ -78,18 +95,3 @@ export const commandRaw = async (command: string, task: Task) => {
 
   return resultPromise;
 };
-
-// const cancel = async (task: Task) => {
-//   if (
-//     task.status === "finished" ||
-//     task.status === "error" ||
-//     task.status === "cancelled"
-//   ) {
-//     return;
-//   }
-
-//   await Promise.all(task.unmounts.map((unmount) => unmount()));
-//   task.status = "cancelled";
-
-//   await Promise.all(task.parents.map(cancel));
-// };

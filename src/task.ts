@@ -58,7 +58,8 @@ export class Task<TValue = any> {
     const promise = this.exec({
       task: this,
       parentResults: parentsResults,
-      command: (command: string) => commandRaw(command, this),
+      command: (command: string, { env } = {}) =>
+        commandRaw({ command, task: this, env }),
       prefix: this.prefix,
     });
 
