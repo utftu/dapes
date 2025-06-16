@@ -52,7 +52,6 @@ export const execCommand = async ({
 }) => {
   process.stdout.write(task.prefix + makeGreen(command) + "\n");
 
-  console.log("-----", "env", env);
   const spawnResult = spawn(["bash", "-c", command], {
     stdin: "inherit",
     stdout: "pipe",

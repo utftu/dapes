@@ -6,7 +6,7 @@
   "main": "dist/dapes.js",
   "types": "dist/types/dapes.d.ts",
   "scripts": {
-    "build": "bun build ./src/dapes.ts --target bun --outdir ./dist && bun run types",
+    "build": "bun build ./src/dapes.ts --target bun --outdir ./dist",
     "types": "tsc --project tsconfig.types.json"
   },
   "devDependencies": {
