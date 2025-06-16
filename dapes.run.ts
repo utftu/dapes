@@ -21,8 +21,16 @@ const publish = new Task({
   name: "publish",
   parents: [build],
   exec: async ({ command }) => {
-    const gp = `git add .; git commit -m "$(date +"%d.%m.%y %H:%M")"; git remote | xargs -L1 git push --all`;
-    await command(`${gp} && npm version patch && ${gp} && npm publish`);
+    const gp = `alias gp="git add .; git commit -m "$(date +"%d.%m.%y %H:%M")"; git remote | xargs -L1 git push --all"`;
+    await command(`
+      gp() {
+        git add .;
+        git commit -m "$(date +"%d.%m.%y %H:%M")";
+        git remote | xargs -L1 git push --all;
+      }
+      gp && npm version patch && gp && npm publish
+    `);
+    // await command(`${gp} gp && npm version patch && gp && npm publish`);
   },
 });
 
