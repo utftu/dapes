@@ -14,7 +14,7 @@ const build = new Task({
   name: "build",
   parents: [types],
   exec: async ({ command }) => {
-    await command("npm run build1");
+    await command("npm run build");
   },
 });
 

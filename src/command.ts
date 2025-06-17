@@ -103,7 +103,7 @@ export const commandForTask = async ({
   env?: Record<string, any>;
 }) => {
   const store: ExecCommandStore = {};
-  const resultPromise = execCommandRaw({ command, store, task, env });
+  const resultPromise = execCommand({ command, store, task, env });
 
   task.abortController.signal.addEventListener("abort", () => {
     store.spawnResult!.kill();
