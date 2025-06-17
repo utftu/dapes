@@ -42,7 +42,8 @@ const teeStderr = (read: ReadableStream, prefix: string) => {
 };
 
 export type ExecCommandStore = { spawnResult?: ReturnType<typeof spawn> };
-export const execCommand = async ({
+
+const execCommandRaw = async ({
   command,
   store,
   task,
@@ -79,6 +80,19 @@ export const execCommand = async ({
   };
 };
 
+export const execCommand = async (
+  params: Parameters<typeof execCommandRaw>[0]
+): ReturnType<typeof execCommandRaw> => {
+  const result = await execCommandRaw(params);
+  if (result.spawnResult.exitCode !== 0) {
+    throw new Error(
+      `Command: >>>${params.command}<<< exitCode: >>>${result.spawnResult.exitCode}<<<`
+    );
+  }
+
+  return result;
+};
+
 export const commandForTask = async ({
   command,
   task,
@@ -89,7 +103,7 @@ export const commandForTask = async ({
   env?: Record<string, any>;
 }) => {
   const store: ExecCommandStore = {};
-  const resultPromise = execCommand({ command, store, task, env });
+  const resultPromise = execCommandRaw({ command, store, task, env });
 
   task.abortController.signal.addEventListener("abort", () => {
     store.spawnResult!.kill();
