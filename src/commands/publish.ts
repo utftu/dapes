@@ -80,6 +80,6 @@ export const publishPackage = async ({
   await gitPush({ task, message });
   const newVersion = await updateVesion(pathToPackage, version);
   // await execCommand({ command: `git tag ${newVersion}`, store: {}, task });
-  // await gitPush({ task, message: newVersion });
+  await gitPush({ task, message: newVersion });
   // await execCommand({ command: `npm publish`, store: {}, task });
 };
