@@ -79,7 +79,7 @@ export const execCommand = async ({
   };
 };
 
-export const commandRaw = async ({
+export const commandForTask = async ({
   command,
   task,
   env,

@@ -1,3 +1,4 @@
+import { publishPackage } from "./src/dapes.ts";
 import { Group } from "./src/group.ts";
 import { startIfMain } from "./src/start.ts";
 import { Task } from "./src/task.ts";
@@ -20,15 +21,12 @@ const build = new Task({
 const publish = new Task({
   name: "publish",
   parents: [build],
-  exec: async ({ command }) => {
-    await command(`
-      gp() {
-        git add .;
-        git commit -m "$(date +"%d.%m.%y %H:%M")";
-        git remote | xargs -L1 git push --all;
-      }
-      gp && npm version patch && gp && npm publish
-    `);
+  exec: async ({ task }) => {
+    await publishPackage({
+      pathToPackage: "./package.json",
+      version: "patch",
+      task,
+    });
   },
 });
 

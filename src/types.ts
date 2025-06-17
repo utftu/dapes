@@ -1,4 +1,4 @@
-import type { commandRaw } from "./command.ts";
+import type { commandForTask } from "./command.ts";
 import type { Task } from "./task.ts";
 
 export type Unmount = () => void | Promise<void>;
@@ -11,7 +11,7 @@ type ExecCtx = {
   command: (
     command: string,
     config?: { env?: Record<string, any> }
-  ) => ReturnType<typeof commandRaw>;
+  ) => ReturnType<typeof commandForTask>;
   prefix: string;
 };
 

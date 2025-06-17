@@ -1,5 +1,5 @@
 import { randomRgbTextStart } from "./color.ts";
-import { commandRaw } from "./command.ts";
+import { commandForTask } from "./command.ts";
 import type { Exec, Unmount } from "./types.ts";
 
 export class Task<TValue = any> {
@@ -59,7 +59,7 @@ export class Task<TValue = any> {
       task: this,
       parentResults: parentsResults,
       command: (command: string, { env } = {}) =>
-        commandRaw({ command, task: this, env }),
+        commandForTask({ command, task: this, env }),
       prefix: this.prefix,
     });
 
