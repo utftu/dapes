@@ -16,7 +16,12 @@ const readEnvContent = (text: string) => {
   return envs;
 };
 
-export const readEnv = async (filePath: string) => {
+export const readEnvFile = async (filePath: string) => {
   const fileText = await Bun.file(filePath).text();
   return readEnvContent(fileText);
+};
+
+export const readEnvFileMerged = async (filePath: string) => {
+  const env = readEnvFile(filePath);
+  return { ...process.env, ...env };
 };
