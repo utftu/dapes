@@ -54,16 +54,16 @@ const gitPush = async ({ message, task }: { message?: string; task: Task }) => {
     task,
   });
 
-  // Получаем список удаленных репозиториев
-  const { stdout } = await execCommand({
-    command: "git remote",
-    store: {},
-    task,
-  });
-  const remotes = stdout.trim().split("\n");
-  for (const remote of remotes) {
-    await execCommand({ command: `git push ${remote} --all`, store: {}, task });
-  }
+  // // Получаем список удаленных репозиториев
+  // const { stdout } = await execCommand({
+  //   command: "git remote",
+  //   store: {},
+  //   task,
+  // });
+  // const remotes = stdout.trim().split("\n");
+  // for (const remote of remotes) {
+  //   await execCommand({ command: `git push ${remote} --all`, store: {}, task });
+  // }
 };
 
 export const publishPackage = async ({
@@ -79,7 +79,7 @@ export const publishPackage = async ({
 }) => {
   await gitPush({ task, message });
   const newVersion = await updateVesion(pathToPackage, version);
-  await execCommand({ command: `git tag ${newVersion}`, store: {}, task });
-  await gitPush({ task, message: newVersion });
-  await execCommand({ command: `npm publish`, store: {}, task });
+  // await execCommand({ command: `git tag ${newVersion}`, store: {}, task });
+  // await gitPush({ task, message: newVersion });
+  // await execCommand({ command: `npm publish`, store: {}, task });
 };
