@@ -20,7 +20,7 @@ const build = new Task({
 
 const publish = new Task({
   name: "publish",
-  // parents: [build],
+  parents: [build],
   exec: async ({ task }) => {
     await publishPackage({
       pathToPackage: "./package.json",
