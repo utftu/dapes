@@ -24,18 +24,18 @@ const updateVesion = async (pathToPackage: string, version: Version) => {
   let versionNew!: string;
 
   if (version === "patch") {
-    versionNew = `${major}.${minor}.${patch + 1}`;
+    versionNew = `${major}.${minor}.${+patch + 1}`;
   }
   if (version === "minor") {
-    versionNew = `${major}.${minor + 1}.0`;
+    versionNew = `${major}.${+minor + 1}.0`;
   }
   if (version === "major") {
-    versionNew = `${major + 1}.0.0`;
+    versionNew = `${+major + 1}.0.0`;
   }
 
   content.version = versionNew;
 
-  filePackage.write(JSON.stringify(content));
+  filePackage.write(JSON.stringify(content, null, 2));
 
   return versionNew;
 };
