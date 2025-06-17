@@ -1,14 +1,14 @@
 import { spawn } from "bun";
 import type { Task } from "./task.ts";
 import type { Envs } from "./types.ts";
-
-const makeGreen = (text: string) => "\x1b[32m" + text + "\x1b[0m";
+import { makeGreen } from "./color.ts";
 
 const tee = async (
   read: ReadableStream,
   write: (text: string) => void,
   prefix: string
 ) => {
+  // console.log("-----", "tee");
   const reader = read.getReader();
   let leftover = "";
   let output = "";

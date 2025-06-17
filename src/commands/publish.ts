@@ -1,6 +1,7 @@
 import { file } from "bun";
 import { execCommand } from "../command.ts";
 import type { Task } from "../task.ts";
+import { makeBlue } from "../color.ts";
 
 type Version = "major" | "minor" | "patch";
 
@@ -16,7 +17,15 @@ const createTimeMessage = () => {
   return commitMessage;
 };
 
-const updateVesion = async (pathToPackage: string, version: Version) => {
+const updateVesion = async ({
+  pathToPackage,
+  version,
+  task,
+}: {
+  pathToPackage: string;
+  version: Version;
+  task: Task;
+}) => {
   const filePackage = file(pathToPackage);
 
   const content = await filePackage.json();
@@ -37,6 +46,10 @@ const updateVesion = async (pathToPackage: string, version: Version) => {
 
   filePackage.write(JSON.stringify(content, null, 2));
 
+  process.stdout.write(
+    task.prefix + makeBlue(`update package ${pathToPackage}`) + "\n"
+  );
+
   return versionNew;
 };
 
@@ -54,16 +67,16 @@ const gitPush = async ({ message, task }: { message?: string; task: Task }) => {
     task,
   });
 
-  // // Получаем список удаленных репозиториев
-  // const { stdout } = await execCommand({
-  //   command: "git remote",
-  //   store: {},
-  //   task,
-  // });
-  // const remotes = stdout.trim().split("\n");
-  // for (const remote of remotes) {
-  //   await execCommand({ command: `git push ${remote} --all`, store: {}, task });
-  // }
+  // Получаем список удаленных репозиториев
+  const { stdout } = await execCommand({
+    command: "git remote",
+    store: {},
+    task,
+  });
+  const remotes = stdout.trim().split("\n");
+  for (const remote of remotes) {
+    await execCommand({ command: `git push ${remote} --all`, store: {}, task });
+  }
 };
 
 export const publishPackage = async ({
@@ -78,8 +91,8 @@ export const publishPackage = async ({
   version: Version;
 }) => {
   await gitPush({ task, message });
-  const newVersion = await updateVesion(pathToPackage, version);
-  // await execCommand({ command: `git tag ${newVersion}`, store: {}, task });
+  const newVersion = await updateVesion({ pathToPackage, version, task });
+  await execCommand({ command: `git tag ${newVersion}`, store: {}, task });
   await gitPush({ task, message: newVersion });
-  // await execCommand({ command: `npm publish`, store: {}, task });
+  await execCommand({ command: `npm publish`, store: {}, task });
 };
