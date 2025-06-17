@@ -6,7 +6,8 @@
   "main": "dist/dapes.js",
   "types": "dist/types/dapes.d.ts",
   "scripts": {
-    "build": "bun build ./src/dapes.ts --target bun --outdir ./dist",
+    "build1": "echo $RANDOM && echo hello",
+    "build": "python3 -c 'from datetime import datetime; print(datetime.now().strftime(\"%Y-%m-%d %H:%M:%S.%f\"))' && bun build ./src/dapes.ts --target bun --outdir ./dist",
     "types": "tsc --project tsconfig.types.json"
   },
   "files": [

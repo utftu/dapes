@@ -13,6 +13,8 @@ const tee = async (
   let leftover = "";
   let output = "";
 
+  const decoder = new TextDecoder("utf-8");
+
   while (true) {
     const { value, done } = await reader.read();
     if (done) {
@@ -20,11 +22,10 @@ const tee = async (
       return output;
     }
 
-    const decoder = new TextDecoder("utf-8");
+    const decodedOutput = decoder.decode(value, { stream: true });
+    output += decodedOutput;
 
-    output += decoder.decode(value, { stream: true });
-
-    const lines = (leftover + output).split("\n");
+    const lines = (leftover + decodedOutput).split("\n");
     leftover = lines.pop() ?? "";
 
     for (const line of lines) {
@@ -33,10 +34,12 @@ const tee = async (
   }
 };
 
-const teeStdout = (read: ReadableStream, prefix: string) =>
-  tee(read, (text) => process.stdout.write(text), prefix);
-const teeStderr = (read: ReadableStream, prefix: string) =>
+const teeStdout = (read: ReadableStream, prefix: string) => {
+  return tee(read, (text) => process.stdout.write(text), prefix);
+};
+const teeStderr = (read: ReadableStream, prefix: string) => {
   tee(read, (text) => process.stderr.write(text), prefix);
+};
 
 export type ExecCommandStore = { spawnResult?: ReturnType<typeof spawn> };
 export const execCommand = async ({
