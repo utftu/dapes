@@ -27,7 +27,6 @@ export class Task<TValue = any> {
   exec: Exec<TValue>;
 
   parents: TaskUniversal[] = [];
-  // children: Task[] = [];
 
   status: "init" | "running" | "finished" | "error" | "cancelled" = "init";
   unmounts: Unmount[] = [];

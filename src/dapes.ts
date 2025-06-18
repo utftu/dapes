@@ -1,4 +1,4 @@
-import { Task } from "./task.ts";
+import { Task, TaskControl } from "./task.ts";
 import { Group, Subgroup } from "./group.ts";
 import { start, startIfMain } from "./start.ts";
 import { readEnvFile, readEnvFileMerged } from "./env.ts";
@@ -7,6 +7,7 @@ import { publishPackage } from "./commands/publish.ts";
 
 export {
   Task,
+  TaskControl,
   Group,
   Subgroup,
   start,
