@@ -2,13 +2,32 @@ import { randomRgbTextStart } from "./color.ts";
 import { commandForTask } from "./command.ts";
 import type { Exec, Unmount } from "./types.ts";
 
+type TaskControlType = {
+  task: Task;
+  needAwait: boolean;
+};
+
+type TaskUniversal = Task | TaskControl;
+const getTaskConttolFromUniversal = (
+  taskUniversal: TaskUniversal
+): TaskControl => {
+  if (taskUniversal instanceof Task) {
+    return {
+      task: taskUniversal,
+      needAwait: true,
+    };
+  }
+
+  return taskUniversal;
+};
+
 export class Task<TValue = any> {
   name: string;
   description: string;
   exec: Exec<TValue>;
 
-  parents: Task[] = [];
-  children: Task[] = [];
+  parents: TaskUniversal[] = [];
+  // children: Task[] = [];
 
   status: "init" | "running" | "finished" | "error" | "cancelled" = "init";
   unmounts: Unmount[] = [];
@@ -29,7 +48,7 @@ export class Task<TValue = any> {
     description = "",
   }: {
     name: string;
-    parents?: Task[];
+    parents?: TaskUniversal[];
     exec: Exec<TValue>;
     description?: string;
   }) {
@@ -45,10 +64,14 @@ export class Task<TValue = any> {
     }
 
     const parentsResults = await Promise.all(
-      this.parents.map(async (task) => ({
-        result: await task.run(),
-        task,
-      }))
+      this.parents.map(async (task) => {
+        const taskControl = getTaskConttolFromUniversal(task);
+        const result = taskControl.task.run();
+        return {
+          result: taskControl.needAwait ? await result : undefined,
+          task: taskControl.task,
+        };
+      })
     );
 
     if (this.promise) {
@@ -82,12 +105,25 @@ export class Task<TValue = any> {
 
     await this.abort();
 
-    await Promise.all(this.parents.map((task) => task.cancel()));
+    await Promise.all(
+      this.parents.map((taskUniversal) =>
+        getTaskConttolFromUniversal(taskUniversal).task.cancel()
+      )
+    );
   }
 
   async abort() {
     this.abortController.abort();
     await Promise.all(this.unmounts.map((unmount) => unmount()));
     this.status = "cancelled";
+  }
+}
+
+export class TaskControl implements TaskControlType {
+  task: Task;
+  needAwait: boolean;
+  constructor({ task, needAwait }: { task: Task; needAwait: boolean }) {
+    this.task = task;
+    this.needAwait = needAwait;
   }
 }
