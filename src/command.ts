@@ -47,12 +47,14 @@ const execCommandRaw = async ({
   store,
   task,
   env,
+  cwd,
   prefix = "",
 }: {
   command: string;
   store: ExecCommandStore;
   task: Task;
   env?: Envs;
+  cwd?: string;
   prefix: string;
 }) => {
   process.stdout.write(prefix + makeGreen(command) + "\n");
@@ -62,6 +64,7 @@ const execCommandRaw = async ({
     stdout: "pipe",
     stderr: "pipe",
     signal: task.abortController.signal,
+    cwd,
     env,
   });
 
@@ -98,9 +101,11 @@ export const execCommandForTask = async ({
   command,
   ctx,
   env,
+  cwd,
 }: {
   command: string;
   env?: Envs;
+  cwd?: string;
   ctx: ExecCtx;
 }) => {
   const store: ExecCommandStore = {};
@@ -110,6 +115,7 @@ export const execCommandForTask = async ({
     task: ctx.task,
     env,
     prefix: ctx.prefix,
+    cwd,
   });
 
   ctx.task.abortController.signal.addEventListener("abort", () => {

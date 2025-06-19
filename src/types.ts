@@ -10,7 +10,7 @@ export type ExecCtx = {
   parentResults: ExecResulCtx[];
   command: (
     command: string,
-    config?: { env?: Record<string, any> }
+    config?: { env?: Record<string, any>; cwd?: string }
   ) => ReturnType<typeof execCommandForTask>;
   prefix: string;
   ctx: ExecCtx;

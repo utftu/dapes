@@ -91,8 +91,8 @@ export class Task<TValue = any> {
     const execCtx: ExecCtx = {
       task: this,
       parentResults: parentsResults,
-      command: (command: string, { env } = {}) =>
-        execCommandForTask({ command, env, ctx: execCtx }),
+      command: (command: string, { env, cwd } = {}) =>
+        execCommandForTask({ command, env, ctx: execCtx, cwd }),
       prefix,
       ctx: null as any,
     };
