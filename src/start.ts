@@ -13,6 +13,7 @@ const defaultSelectTask = new Task({
 
 type Data = {
   task: Task;
+  group: Group;
 };
 
 const convertGroupToBlock = (group: Group) => {
@@ -22,12 +23,12 @@ const convertGroupToBlock = (group: Group) => {
         arg: task.name,
         description: task.description,
         params: [],
-        data: { task },
+        data: { task, group },
       })
   );
 
   const subgrupBlocks: Block<Data>[] = group.subgroups.map((subgroup) => {
-    const { subgrupBlocks, tasksBlocks } = convertGroupToBlock(subgroup.group);
+    const { subgrupBlocks, tasksBlocks } = convertGroupToBlock(subgroup);
 
     const block = new Block<Data>({
       arg: subgroup.name,
@@ -36,6 +37,7 @@ const convertGroupToBlock = (group: Group) => {
       children: [...tasksBlocks, ...subgrupBlocks],
       data: {
         task: tasksBlocks[0]?.data.task || defaultSelectTask,
+        group: subgroup,
       },
     });
     return block;
@@ -54,6 +56,7 @@ export const start = (group: Group) => {
     params: [],
     data: {
       task: tasksBlocks[0]?.data.task || defaultSelectTask,
+      group: tasksBlocks[0]?.data.group || group,
     },
   });
 
@@ -62,8 +65,15 @@ export const start = (group: Group) => {
   const parsedBlocks = parse<Block<Data>>(args, [globalBlock]);
 
   const task = parsedBlocks.at(-1)!.block.data.task;
+  const finalGroup = parsedBlocks.at(-1)!.block.data.group;
 
-  return task.run();
+  return task.run({
+    taskControl: {
+      task,
+      needAwait: true,
+      group: finalGroup,
+    },
+  });
 };
 
 export const startIfMain = async (group: Group, meta: ImportMeta) => {

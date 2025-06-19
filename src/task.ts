@@ -1,10 +1,12 @@
 import { randomRgbTextStart } from "./color.ts";
-import { commandForTask } from "./command.ts";
-import type { Exec, Unmount } from "./types.ts";
+import { execCommandForTask } from "./command.ts";
+import type { Group } from "./group.ts";
+import type { Exec, ExecCtx, Unmount } from "./types.ts";
 
-type TaskControlType = {
+export type TaskControl = {
   task: Task;
   needAwait: boolean;
+  group?: Group;
 };
 
 type TaskUniversal = Task | TaskControl;
@@ -23,6 +25,8 @@ const getTaskConttolFromUniversal = (
 
 export class Task<TValue = any> {
   name: string;
+
+  group?: Group;
   description: string;
   exec: Exec<TValue>;
 
@@ -36,8 +40,9 @@ export class Task<TValue = any> {
 
   _colorStart = randomRgbTextStart();
 
-  get prefix() {
-    return this._colorStart + this.name + ": " + "\x1b[0m";
+  getPrefix(groupName: string = "") {
+    const groupPart = groupName ? `${groupName}:` : "";
+    return this._colorStart + groupPart + this.name + ": " + "\x1b[0m";
   }
 
   constructor({
@@ -57,7 +62,11 @@ export class Task<TValue = any> {
     this.description = description;
   }
 
-  async run(): Promise<TValue> {
+  async run({
+    taskControl,
+  }: {
+    taskControl?: TaskControl;
+  } = {}): Promise<TValue> {
     if (this.promise) {
       return this.promise;
     }
@@ -65,7 +74,7 @@ export class Task<TValue = any> {
     const parentsResults = await Promise.all(
       this.parents.map(async (task) => {
         const taskControl = getTaskConttolFromUniversal(task);
-        const result = taskControl.task.run();
+        const result = taskControl.task.run({ taskControl });
         return {
           result: taskControl.needAwait ? await result : undefined,
           task: taskControl.task,
@@ -77,13 +86,19 @@ export class Task<TValue = any> {
       return this.promise;
     }
 
-    const promise = this.exec({
+    const prefix = this.getPrefix(taskControl?.group?.name);
+
+    const execCtx: ExecCtx = {
       task: this,
       parentResults: parentsResults,
       command: (command: string, { env } = {}) =>
-        commandForTask({ command, task: this, env }),
-      prefix: this.prefix,
-    });
+        execCommandForTask({ command, env, ctx: execCtx }),
+      prefix,
+      ctx: null as any,
+    };
+    execCtx.ctx = execCtx;
+
+    const promise = this.exec(execCtx);
 
     this.promise =
       promise instanceof Promise ? promise : Promise.resolve(promise);
@@ -115,14 +130,5 @@ export class Task<TValue = any> {
     this.abortController.abort();
     await Promise.all(this.unmounts.map((unmount) => unmount()));
     this.status = "cancelled";
-  }
-}
-
-export class TaskControl implements TaskControlType {
-  task: Task;
-  needAwait: boolean;
-  constructor({ task, needAwait }: { task: Task; needAwait: boolean }) {
-    this.task = task;
-    this.needAwait = needAwait;
   }
 }

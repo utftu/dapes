@@ -21,16 +21,17 @@ const build = new Task({
 const publish = new Task({
   name: "publish",
   parents: [build],
-  exec: async ({ task }) => {
+  exec: async ({ ctx }) => {
     await publishPackage({
       pathToPackage: "./package.json",
       version: "patch",
-      task,
+      ctx,
     });
   },
 });
 
 const group = new Group({
+  name: "123",
   tasks: [build, types, publish],
 });
 

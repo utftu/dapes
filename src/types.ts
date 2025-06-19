@@ -1,18 +1,19 @@
-import type { commandForTask } from "./command.ts";
+import type { execCommandForTask } from "./command.ts";
 import type { Task } from "./task.ts";
 
 export type Unmount = () => void | Promise<void>;
 
 export type Exec<TValue = any> = (ctx: ExecCtx) => TValue | Promise<TValue>;
 
-type ExecCtx = {
+export type ExecCtx = {
   task: Task;
   parentResults: ExecResulCtx[];
   command: (
     command: string,
     config?: { env?: Record<string, any> }
-  ) => ReturnType<typeof commandForTask>;
+  ) => ReturnType<typeof execCommandForTask>;
   prefix: string;
+  ctx: ExecCtx;
 };
 
 type ExecResulCtx<TValue = any> = {

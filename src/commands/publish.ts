@@ -1,7 +1,7 @@
 import { file } from "bun";
-import { execCommand } from "../command.ts";
-import type { Task } from "../task.ts";
+import { execCommandForTask } from "../command.ts";
 import { makeBlue } from "../color.ts";
+import type { ExecCtx } from "../types.ts";
 
 type Version = "major" | "minor" | "patch";
 
@@ -20,11 +20,11 @@ const createTimeMessage = () => {
 const updateVesion = async ({
   pathToPackage,
   version,
-  task,
+  ctx,
 }: {
   pathToPackage: string;
   version: Version;
-  task: Task;
+  ctx: ExecCtx;
 }) => {
   const filePackage = file(pathToPackage);
 
@@ -47,52 +47,72 @@ const updateVesion = async ({
   filePackage.write(JSON.stringify(content, null, 2));
 
   process.stdout.write(
-    task.prefix + makeBlue(`update package ${pathToPackage}`) + "\n"
+    ctx.prefix + makeBlue(`update package ${pathToPackage}`) + "\n"
   );
 
   return versionNew;
 };
 
-const gitPush = async ({ message, task }: { message?: string; task: Task }) => {
+const gitPush = async ({
+  message,
+  ctx,
+}: {
+  message?: string;
+  ctx: ExecCtx;
+}) => {
   // Формируем сообщение коммита с текущей датой, если не передан пользовательский message
   const commitMessage = message || createTimeMessage();
 
   // git add .
-  await execCommand({ command: "git add .", store: {}, task });
+  await execCommandForTask({
+    command: "git add .",
+    ctx,
+  });
 
   // git commit
-  await execCommand({
+  await execCommandForTask({
     command: `git commit -m "${commitMessage}"`,
-    store: {},
-    task,
+    ctx,
   });
 
   // Получаем список удаленных репозиториев
-  const { stdout } = await execCommand({
+  const { stdout } = await execCommandForTask({
     command: "git remote",
-    store: {},
-    task,
+    ctx,
   });
   const remotes = stdout.trim().split("\n");
   for (const remote of remotes) {
-    await execCommand({ command: `git push ${remote} --all`, store: {}, task });
+    await execCommandForTask({
+      command: `git push ${remote} --all`,
+      ctx,
+    });
   }
 };
 
 export const publishPackage = async ({
-  task,
   message = "",
   pathToPackage,
   version,
+  ctx,
 }: {
-  task: Task;
   message?: string;
   pathToPackage: string;
   version: Version;
+  ctx: ExecCtx;
 }) => {
-  await gitPush({ task, message });
-  const newVersion = await updateVesion({ pathToPackage, version, task });
-  await execCommand({ command: `git tag ${newVersion}`, store: {}, task });
-  await gitPush({ task, message: newVersion });
-  await execCommand({ command: `npm publish`, store: {}, task });
+  await gitPush({ ctx, message });
+  const newVersion = await updateVesion({
+    pathToPackage,
+    version,
+    ctx,
+  });
+  await execCommandForTask({
+    command: `git tag ${newVersion}`,
+    ctx,
+  });
+  await gitPush({ ctx, message: newVersion });
+  await execCommandForTask({
+    command: `npm publish`,
+    ctx,
+  });
 };
