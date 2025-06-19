@@ -31,7 +31,7 @@ const publish = new Task({
 });
 
 const group = new Group({
-  name: "123",
+  name: "",
   tasks: [build, types, publish],
 });
 
