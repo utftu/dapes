@@ -16,5 +16,9 @@
     "@types/bun": "latest",
     "argblock": "0.0.9",
     "typescript": "^5"
+  },
+  "dependencies": {
+    "utftu": "^1.0.29",
+    "vite": "^7.0.0"
   }
 }

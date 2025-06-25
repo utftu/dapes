@@ -1,4 +1,5 @@
 import { randomRgbTextStart } from "./color.ts";
+import { execCommandNativeForTask } from "./command.native.ts";
 import { execCommandForTask } from "./command.ts";
 import type { Group } from "./group.ts";
 import type { Exec, ExecCtx, Unmount } from "./types.ts";
@@ -93,6 +94,8 @@ export class Task<TValue = any> {
       parentResults: parentsResults,
       command: (command: string, { env, cwd } = {}) =>
         execCommandForTask({ command, env, ctx: execCtx, cwd }),
+      commandNative: (command: string, { env, cwd } = {}) =>
+        execCommandNativeForTask({ command, env, ctx: execCtx, cwd }),
       prefix,
       ctx: null as any,
     };

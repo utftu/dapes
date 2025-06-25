@@ -1,3 +1,4 @@
+import type { execCommandNativeForTask } from "./command.native.ts";
 import type { execCommandForTask } from "./command.ts";
 import type { Task } from "./task.ts";
 
@@ -12,6 +13,10 @@ export type ExecCtx = {
     command: string,
     config?: { env?: Record<string, any>; cwd?: string }
   ) => ReturnType<typeof execCommandForTask>;
+  commandNative: (
+    command: string,
+    config?: { env?: Record<string, any>; cwd?: string }
+  ) => ReturnType<typeof execCommandNativeForTask>;
   prefix: string;
   ctx: ExecCtx;
 };

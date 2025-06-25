@@ -47,6 +47,11 @@ const convertGroupToBlock = (group: Group) => {
 };
 
 export const start = (group: Group) => {
+  process.on("SIGINT", () => {
+    console.log("Parent got SIGINT, exiting");
+    process.exit(130);
+  });
+
   const { subgrupBlocks, tasksBlocks } = convertGroupToBlock(group);
 
   const globalBlock = new Block<Data>({

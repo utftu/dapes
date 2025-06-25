@@ -2,6 +2,7 @@ import { spawn } from "bun";
 import type { Task } from "./task.ts";
 import type { Envs, ExecCtx } from "./types.ts";
 import { makeGreen } from "./color.ts";
+import process from "node:process";
 
 const tee = async (
   read: ReadableStream,
@@ -65,7 +66,9 @@ const execCommandRaw = async ({
     stderr: "pipe",
     signal: task.abortController.signal,
     cwd,
-    env,
+    env: env
+      ? { FORCE_COLOR: "1", ...env }
+      : { ...process.env, FORCE_COLOR: "1" },
   });
 
   store.spawnResult = spawnResult;
@@ -84,19 +87,6 @@ const execCommandRaw = async ({
   };
 };
 
-export const execCommand = async (
-  params: Parameters<typeof execCommandRaw>[0]
-): ReturnType<typeof execCommandRaw> => {
-  const result = await execCommandRaw(params);
-  if (result.spawnResult.exitCode !== 0) {
-    throw new Error(
-      `Command: >>>${params.command}<<< exitCode: >>>${result.spawnResult.exitCode}<<<`
-    );
-  }
-
-  return result;
-};
-
 export const execCommandForTask = async ({
   command,
   ctx,
@@ -109,7 +99,7 @@ export const execCommandForTask = async ({
   ctx: ExecCtx;
 }) => {
   const store: ExecCommandStore = {};
-  const resultPromise = execCommand({
+  const resultPromise = execCommandRaw({
     command,
     store,
     task: ctx.task,
@@ -121,6 +111,18 @@ export const execCommandForTask = async ({
   ctx.task.abortController.signal.addEventListener("abort", () => {
     store.spawnResult!.kill();
   });
+
+  const result = await resultPromise;
+  if (result.spawnResult.exitCode === 130) {
+    console.log("Received SIGINT, exiting gracefully...");
+    process.exit(130);
+  }
+
+  if (result.spawnResult.exitCode !== 0) {
+    throw new Error(
+      `Command: ${command}, exitCode: ${result.spawnResult.exitCode}`
+    );
+  }
 
   return resultPromise;
 };
