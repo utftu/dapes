@@ -87,7 +87,47 @@ const execCommandRaw = async ({
   };
 };
 
-export const execCommandForTask = async ({
+// export const execCommandForTask = async ({
+//   command,
+//   ctx,
+//   env,
+//   cwd,
+// }: {
+//   command: string;
+//   env?: Envs;
+//   cwd?: string;
+//   ctx: ExecCtx;
+// }) => {
+//   const store: ExecCommandStore = {};
+//   const resultPromise = execCommandRaw({
+//     command,
+//     store,
+//     signal: ctx.task.abortController.signal,
+//     env,
+//     prefix: ctx.prefix,
+//     cwd,
+//   });
+
+//   ctx.task.abortController.signal.addEventListener("abort", () => {
+//     store.spawnResult!.kill();
+//   });
+
+//   const result = await resultPromise;
+//   if (result.spawnResult.exitCode === 130) {
+//     console.log("Received SIGINT, exiting gracefully...");
+//     process.exit(130);
+//   }
+
+//   if (result.spawnResult.exitCode !== 0) {
+//     throw new Error(
+//       `Command: ${command}, exitCode: ${result.spawnResult.exitCode}`
+//     );
+//   }
+
+//   return resultPromise;
+// };
+
+export const execCommandForTaskMayError = async ({
   command,
   ctx,
   env,
@@ -112,7 +152,13 @@ export const execCommandForTask = async ({
     store.spawnResult!.kill();
   });
 
-  const result = await resultPromise;
+  return resultPromise;
+};
+
+export const execCommandForTask = async (
+  params: Parameters<typeof execCommandForTaskMayError>[0]
+): ReturnType<typeof execCommandForTaskMayError> => {
+  const result = await execCommandForTaskMayError(params);
   if (result.spawnResult.exitCode === 130) {
     console.log("Received SIGINT, exiting gracefully...");
     process.exit(130);
@@ -120,9 +166,9 @@ export const execCommandForTask = async ({
 
   if (result.spawnResult.exitCode !== 0) {
     throw new Error(
-      `Command: ${command}, exitCode: ${result.spawnResult.exitCode}`
+      `Command: ${params.command}, exitCode: ${result.spawnResult.exitCode}`
     );
   }
 
-  return resultPromise;
+  return result;
 };

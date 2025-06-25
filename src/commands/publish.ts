@@ -1,5 +1,5 @@
 import { file } from "bun";
-import { execCommandForTask } from "../command.ts";
+import { execCommandForTask, execCommandForTaskMayError } from "../command.ts";
 import { makeBlue } from "../color.ts";
 import type { ExecCtx } from "../types.ts";
 
