@@ -46,17 +46,17 @@ export type ExecCommandStore = { spawnResult?: ReturnType<typeof spawn> };
 const execCommandRaw = async ({
   command,
   store,
-  task,
+  signal,
   env,
   cwd,
   prefix = "",
 }: {
   command: string;
   store: ExecCommandStore;
-  task: Task;
   env?: Envs;
   cwd?: string;
   prefix: string;
+  signal: AbortSignal;
 }) => {
   process.stdout.write(prefix + makeGreen(command) + "\n");
 
@@ -64,7 +64,7 @@ const execCommandRaw = async ({
     stdin: "inherit",
     stdout: "pipe",
     stderr: "pipe",
-    signal: task.abortController.signal,
+    signal,
     cwd,
     env: env
       ? { FORCE_COLOR: "1", ...env }
@@ -102,7 +102,7 @@ export const execCommandForTask = async ({
   const resultPromise = execCommandRaw({
     command,
     store,
-    task: ctx.task,
+    signal: ctx.task.abortController.signal,
     env,
     prefix: ctx.prefix,
     cwd,
