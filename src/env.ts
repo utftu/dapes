@@ -22,6 +22,6 @@ export const readEnvFile = async (filePath: string) => {
 };
 
 export const readEnvFileMerged = async (filePath: string) => {
-  const env = readEnvFile(filePath);
+  const env = await readEnvFile(filePath);
   return { ...process.env, ...env };
 };
