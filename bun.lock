@@ -9,7 +9,7 @@
       },
       "devDependencies": {
         "@types/bun": "latest",
-        "argblock": "0.0.9",
+        "argblock": "0.0.10",
         "typescript": "^5",
         "vitest": "^3.2.4",
       },
@@ -132,7 +132,7 @@
 
     "@vitest/utils": ["@vitest/utils@3.2.4", "", { "dependencies": { "@vitest/pretty-format": "3.2.4", "loupe": "^3.1.4", "tinyrainbow": "^2.0.0" } }, "sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA=="],
 
-    "argblock": ["argblock@0.0.9", "", {}, "sha512-vNpD8+1wpOsU4oznx7WW5cmSCIsRPRPtV9Jga3A8OOaWnXjWNUsc09qR9V9E4R9JYaOvmc+NZnTmeG3yzVEc4g=="],
+    "argblock": ["argblock@0.0.10", "", { "dependencies": { "dapes": "^0.0.24" } }, "sha512-8VU3sEYGuVXDK17kUdT1+pCnHnybpmk/v1bqnnHIEQ4lLaJIb2BmJjQO08QASGa1AuztBaTuLYl8Ak+es0Qi3Q=="],
 
     "assertion-error": ["assertion-error@2.0.1", "", {}, "sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA=="],
 
@@ -143,6 +143,8 @@
     "chai": ["chai@5.2.0", "", { "dependencies": { "assertion-error": "^2.0.1", "check-error": "^2.1.1", "deep-eql": "^5.0.1", "loupe": "^3.1.0", "pathval": "^2.0.0" } }, "sha512-mCuXncKXk5iCLhfhwTc0izo0gtEmpz5CtG2y8GiOINBlMVS6v8TMRc5TaLWKS6692m9+dVVfzgeVxR5UxWHTYw=="],
 
     "check-error": ["check-error@2.1.1", "", {}, "sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw=="],
+
+    "dapes": ["dapes@0.0.24", "", { "dependencies": { "utftu": "^1.0.29", "vite": "^7.0.0" } }, "sha512-5OaVAOcP4ozbNYlOvzDrWNdK6m3JtQFgExVGbgQQnfb0Qxdg1uw+nkEd2P8Ki8c/w8xDlyHi0bDyLr/AonnFgQ=="],
 
     "debug": ["debug@4.4.1", "", { "dependencies": { "ms": "^2.1.3" } }, "sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ=="],
 

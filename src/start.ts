@@ -14,18 +14,37 @@ const defaultSelectTask = new Task({
 type Data = {
   task: Task;
   group: Group;
+  optionalArgs?: boolean;
 };
 
 const convertGroupToBlock = (group: Group) => {
-  const tasksBlocks = group.tasks.map(
-    (task) =>
-      new Block<Data>({
+  const tasksBlocks = group.tasks.map((task) => {
+    const children = [];
+
+    if (task.optionalArgs === true) {
+      const anyBlock = new Block<Data>({
         arg: task.name,
+        matcher: (args, i) => {
+          return {
+            match: true,
+            jumpNext: args.length - i,
+          };
+        },
         description: task.description,
         params: [],
-        data: { task, group },
-      })
-  );
+        data: { task, group, optionalArgs: true },
+      });
+      children.push(anyBlock);
+    }
+
+    return new Block<Data>({
+      arg: task.name,
+      description: task.description,
+      params: [],
+      data: { task, group },
+      children,
+    });
+  });
 
   const subgrupBlocks: Block<Data>[] = group.subgroups.map((subgroup) => {
     const { subgrupBlocks, tasksBlocks } = convertGroupToBlock(subgroup);
@@ -69,8 +88,10 @@ export const start = (group: Group) => {
 
   const parsedBlocks = parse<Block<Data>>(args, [globalBlock]);
 
-  const task = parsedBlocks.at(-1)!.block.data.task;
-  const finalGroup = parsedBlocks.at(-1)!.block.data.group;
+  const selectedPrasedBlock = parsedBlocks.at(-1)!;
+
+  const task = selectedPrasedBlock.block.data.task;
+  const finalGroup = selectedPrasedBlock.block.data.group;
 
   return task.run({
     taskControl: {
@@ -78,6 +99,10 @@ export const start = (group: Group) => {
       needAwait: true,
       group: finalGroup,
     },
+    args:
+      selectedPrasedBlock.block.data.optionalArgs === true
+        ? selectedPrasedBlock.arg
+        : "",
   });
 };
 

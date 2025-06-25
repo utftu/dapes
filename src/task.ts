@@ -28,6 +28,7 @@ export class Task<TValue = any> {
   name: string;
 
   group?: Group;
+  optionalArgs: boolean;
   description: string;
   exec: Exec<TValue>;
 
@@ -51,22 +52,27 @@ export class Task<TValue = any> {
     parents = [],
     exec,
     description = "",
+    optionalArgs = false,
   }: {
     name: string;
     parents?: TaskUniversal[];
     exec: Exec<TValue>;
     description?: string;
+    optionalArgs?: boolean;
   }) {
     this.name = name;
     this.parents = parents;
     this.exec = exec;
     this.description = description;
+    this.optionalArgs = optionalArgs;
   }
 
   async run({
     taskControl,
+    args = "",
   }: {
     taskControl?: TaskControl;
+    args?: string;
   } = {}): Promise<TValue> {
     if (this.promise) {
       return this.promise;
@@ -98,6 +104,7 @@ export class Task<TValue = any> {
         execCommandNativeForTask({ command, env, ctx: execCtx, cwd }),
       prefix,
       ctx: null as any,
+      args: args,
     };
     execCtx.ctx = execCtx;
 

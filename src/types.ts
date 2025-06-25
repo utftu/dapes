@@ -19,6 +19,7 @@ export type ExecCtx = {
   ) => ReturnType<typeof execCommandNativeForTask>;
   prefix: string;
   ctx: ExecCtx;
+  args: string;
 };
 
 type ExecResulCtx<TValue = any> = {
