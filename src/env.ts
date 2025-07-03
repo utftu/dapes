@@ -7,7 +7,11 @@ const readEnvContent = (text: string) => {
   for (const line of lines) {
     const trimmedLine = line.trim();
 
-    if (line.startsWith("#")) {
+    if (trimmedLine.startsWith("#")) {
+      continue;
+    }
+
+    if (trimmedLine === "") {
       continue;
     }
 
