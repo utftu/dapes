@@ -5,7 +5,13 @@ const readEnvContent = (text: string) => {
 
   const envs: Envs = {};
   for (const line of lines) {
-    const splitted = line.split("=");
+    const trimmedLine = line.trim();
+
+    if (line.startsWith("#")) {
+      continue;
+    }
+
+    const splitted = trimmedLine.split("=");
 
     const name = splitted[0]!;
     const value = splitted.slice(1).join("=");

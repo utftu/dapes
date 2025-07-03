@@ -1,5 +1,4 @@
 import { spawn } from "bun";
-import type { Task } from "./task.ts";
 import type { Envs, ExecCtx } from "./types.ts";
 import { makeGreen } from "./color.ts";
 import process from "node:process";
@@ -86,46 +85,6 @@ const execCommandRaw = async ({
     spawnResult,
   };
 };
-
-// export const execCommandForTask = async ({
-//   command,
-//   ctx,
-//   env,
-//   cwd,
-// }: {
-//   command: string;
-//   env?: Envs;
-//   cwd?: string;
-//   ctx: ExecCtx;
-// }) => {
-//   const store: ExecCommandStore = {};
-//   const resultPromise = execCommandRaw({
-//     command,
-//     store,
-//     signal: ctx.task.abortController.signal,
-//     env,
-//     prefix: ctx.prefix,
-//     cwd,
-//   });
-
-//   ctx.task.abortController.signal.addEventListener("abort", () => {
-//     store.spawnResult!.kill();
-//   });
-
-//   const result = await resultPromise;
-//   if (result.spawnResult.exitCode === 130) {
-//     console.log("Received SIGINT, exiting gracefully...");
-//     process.exit(130);
-//   }
-
-//   if (result.spawnResult.exitCode !== 0) {
-//     throw new Error(
-//       `Command: ${command}, exitCode: ${result.spawnResult.exitCode}`
-//     );
-//   }
-
-//   return resultPromise;
-// };
 
 export const execCommandForTaskMayError = async ({
   command,
