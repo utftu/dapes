@@ -20,7 +20,15 @@ const readEnvContent = (text: string) => {
     const name = splitted[0]!;
     const value = splitted.slice(1).join("=");
 
-    envs[name] = value;
+    let preparedValue;
+
+    if (value.startsWith('"') && value.endsWith('"')) {
+      preparedValue = value.slice(1, -1);
+    } else {
+      preparedValue = value;
+    }
+
+    envs[name] = preparedValue;
   }
 
   return envs;
