@@ -80,18 +80,18 @@ export class Task<TValue = any> {
       return this.promise;
     }
 
-    const parentsResults = await Promise.all(
-      this.parents.map(async (task) => {
-        const taskControlChild = getTaskControlFromUniversal(task, taskControl);
-        const result = taskControlChild.task.run({
-          taskControl: taskControlChild,
-        });
-        return {
-          result: taskControlChild.needAwait ? await result : undefined,
-          task: taskControlChild.task,
-        };
-      })
-    );
+    const parentsResults: { task: Task; result: any }[] = [];
+
+    for (const task of this.parents) {
+      const taskControlChild = getTaskControlFromUniversal(task, taskControl);
+      const result = taskControlChild.task.run({
+        taskControl: taskControlChild,
+      });
+      parentsResults.push({
+        result: taskControlChild.needAwait ? await result : undefined,
+        task: taskControlChild.task,
+      });
+    }
 
     if (this.promise) {
       return this.promise;
