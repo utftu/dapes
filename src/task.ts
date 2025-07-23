@@ -11,14 +11,16 @@ export type TaskControl = {
 };
 
 type TaskUniversal = Task | TaskControl;
-const getTaskConttolFromUniversal = (
-  taskUniversal: TaskUniversal
+const getTaskControlFromUniversal = (
+  taskUniversal: TaskUniversal,
+  parentTaskControl?: TaskControl
 ): TaskControl => {
   if (taskUniversal instanceof Task) {
     return {
       task: taskUniversal,
       needAwait: true,
-    };
+      group: parentTaskControl?.group,
+    } satisfies TaskControl;
   }
 
   return taskUniversal;
@@ -80,11 +82,13 @@ export class Task<TValue = any> {
 
     const parentsResults = await Promise.all(
       this.parents.map(async (task) => {
-        const taskControl = getTaskConttolFromUniversal(task);
-        const result = taskControl.task.run({ taskControl });
+        const taskControlChild = getTaskControlFromUniversal(task, taskControl);
+        const result = taskControlChild.task.run({
+          taskControl: taskControlChild,
+        });
         return {
-          result: taskControl.needAwait ? await result : undefined,
-          task: taskControl.task,
+          result: taskControlChild.needAwait ? await result : undefined,
+          task: taskControlChild.task,
         };
       })
     );
@@ -131,7 +135,7 @@ export class Task<TValue = any> {
 
     await Promise.all(
       this.parents.map((taskUniversal) =>
-        getTaskConttolFromUniversal(taskUniversal).task.cancel()
+        getTaskControlFromUniversal(taskUniversal).task.cancel()
       )
     );
   }
