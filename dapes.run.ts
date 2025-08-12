@@ -21,6 +21,9 @@ const build = new Task({
 const publish = new Task({
   name: "publish",
   parents: [build],
+  beforeExec({ command }) {
+    command("rm -rf dist");
+  },
   exec: async ({ ctx }) => {
     await publishPackage({
       pathToPackage: "./package.json",
