@@ -91,8 +91,8 @@ const gitPush = async ({
 
 export const publishPackage = async ({
   message = "",
-  pathToPackage,
-  version,
+  pathToPackage = "package.json",
+  version = "patch",
   ctx,
 }: {
   message?: string;
