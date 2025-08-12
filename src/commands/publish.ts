@@ -96,8 +96,8 @@ export const publishPackage = async ({
   ctx,
 }: {
   message?: string;
-  pathToPackage: string;
-  version: Version;
+  pathToPackage?: string;
+  version?: Version;
   ctx: ExecCtx;
 }) => {
   await gitPush({ ctx, message }).catch(() => {});
