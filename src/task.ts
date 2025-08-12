@@ -1,13 +1,43 @@
+import { createControlledPromise } from "utftu";
 import { randomRgbTextStart } from "./color.ts";
 import { execCommandNativeForTask } from "./command.native.ts";
 import { execCommandForTask } from "./command.ts";
 import type { Group } from "./group.ts";
 import type { Exec, ExecCtx, Unmount } from "./types.ts";
+import { resolve } from "bun";
+
+type ParentResult = { task: Task; result: any };
 
 export type TaskControl = {
   task: Task;
   needAwait: boolean;
   group?: Group;
+};
+
+const createExecCtx = ({
+  parentResults,
+  task,
+  prefix,
+  args,
+}: {
+  parentResults: ParentResult[];
+  task: Task;
+  prefix: string;
+  args: string;
+}) => {
+  const execCtx: ExecCtx = {
+    task,
+    parentResults: parentResults,
+    command: (command: string, { env, cwd } = {}) =>
+      execCommandForTask({ command, env, ctx: execCtx, cwd }),
+    commandNative: (command: string, { env, cwd } = {}) =>
+      execCommandNativeForTask({ command, env, ctx: execCtx, cwd }),
+    prefix,
+    ctx: null as any,
+    args: args,
+  };
+  execCtx.ctx = execCtx;
+  return execCtx;
 };
 
 type TaskUniversal = Task | TaskControl;
@@ -32,15 +62,20 @@ export class Task<TValue = any> {
   group?: Group;
   optionalArgs: boolean;
   description: string;
+
+  beforeExec?: Exec<void>;
   exec: Exec<TValue>;
 
   parents: TaskUniversal[] = [];
+  children: TaskUniversal[] = [];
 
   status: "init" | "running" | "finished" | "error" | "cancelled" = "init";
   unmounts: Unmount[] = [];
 
   abortController = new AbortController();
   promise?: Promise<TValue>;
+  promiseEnt: ReturnType<typeof createControlledPromise<TValue>> | undefined;
+  // runned = false;
 
   _colorStart = randomRgbTextStart();
 
@@ -52,13 +87,17 @@ export class Task<TValue = any> {
   constructor({
     name,
     parents = [],
+    children = [],
     exec,
     description = "",
     optionalArgs = false,
+    beforeExec,
   }: {
     name: string;
     parents?: TaskUniversal[];
+    children?: TaskUniversal[];
     exec: Exec<TValue>;
+    beforeExec?: Exec<void>;
     description?: string;
     optionalArgs?: boolean;
   }) {
@@ -67,6 +106,8 @@ export class Task<TValue = any> {
     this.exec = exec;
     this.description = description;
     this.optionalArgs = optionalArgs;
+    this.children = children;
+    this.beforeExec = beforeExec;
   }
 
   async run({
@@ -76,32 +117,49 @@ export class Task<TValue = any> {
     taskControl?: TaskControl;
     args?: string;
   } = {}): Promise<TValue> {
-    if (this.promise) {
-      return this.promise;
+    if (this.promiseEnt) {
+      return this.promiseEnt.promise;
     }
 
-    const parentsResults: { task: Task; result: any }[] = [];
+    this.promiseEnt = createControlledPromise<TValue>();
+
+    // if (this.promise) {
+    //   return this.promise;
+    // }
+
+    const prefix = this.getPrefix(taskControl?.group?.name);
+
+    if (this.beforeExec) {
+      await this.beforeExec(
+        createExecCtx({
+          parentResults: [],
+          task: this,
+          prefix,
+          args,
+        })
+      );
+    }
+
+    const parentResults: ParentResult[] = [];
 
     for (const task of this.parents) {
       const taskControlChild = getTaskControlFromUniversal(task, taskControl);
       const result = taskControlChild.task.run({
         taskControl: taskControlChild,
       });
-      parentsResults.push({
+      parentResults.push({
         result: taskControlChild.needAwait ? await result : undefined,
         task: taskControlChild.task,
       });
     }
 
-    if (this.promise) {
-      return this.promise;
-    }
-
-    const prefix = this.getPrefix(taskControl?.group?.name);
+    // if (this.promise) {
+    //   return this.promise;
+    // }
 
     const execCtx: ExecCtx = {
       task: this,
-      parentResults: parentsResults,
+      parentResults: parentResults,
       command: (command: string, { env, cwd } = {}) =>
         execCommandForTask({ command, env, ctx: execCtx, cwd }),
       commandNative: (command: string, { env, cwd } = {}) =>
@@ -112,14 +170,30 @@ export class Task<TValue = any> {
     };
     execCtx.ctx = execCtx;
 
-    const promise = this.exec(execCtx);
+    const execResult = await this.exec(
+      createExecCtx({ parentResults, task: this, prefix, args })
+    );
 
-    this.promise =
-      promise instanceof Promise ? promise : Promise.resolve(promise);
+    this.promiseEnt.controls.resolve(execResult);
 
-    const value = await promise;
+    // const promise = this.exec(
+    //   createExecCtx({ parentResults, task: this, prefix, args })
+    // );
 
-    return value;
+    // this.promise =
+    //   promise instanceof Promise ? promise : Promise.resolve(promise);
+
+    // const value = await promise;
+
+    for (const task of this.children) {
+      const taskControlChild = getTaskControlFromUniversal(task, taskControl);
+      const result = taskControlChild.task.run({
+        taskControl: taskControlChild,
+      });
+      taskControlChild.needAwait ? await result : undefined;
+    }
+
+    return execResult;
   }
 
   async cancel() {

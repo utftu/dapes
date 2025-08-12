@@ -7,9 +7,9 @@ export class Group {
   constructor({
     tasks,
     subgroups = [],
-    name,
+    name = "",
   }: {
-    name: string;
+    name?: string;
     tasks: Task[];
     subgroups?: Group[];
   }) {

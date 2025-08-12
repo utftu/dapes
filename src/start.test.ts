@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import type { Group } from "./group.ts";
+import { Group } from "./group.ts";
 import { Task } from "./task.ts";
 import { start } from "./start.ts";
 
@@ -20,10 +20,14 @@ const run = new Task({
   },
 });
 
-const group: Group = {
+const group = new Group({
   tasks: [run, build],
-  subgroups: [],
-};
+});
+
+// const group: Group = {
+//   tasks: [run, build],
+//   subgroups: [],
+// };
 
 describe("CLI start()", () => {
   const originalArgv = process.argv;

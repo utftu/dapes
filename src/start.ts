@@ -3,7 +3,7 @@ import { Block, parse, globalArg } from "argblock";
 import { Task } from "./task.ts";
 import { argv, pathToFileURL } from "bun";
 
-const defaultSelectTask = new Task({
+const defaultSelectTask = new Task<any>({
   name: "Default select task",
   parents: [],
   exec: ({ prefix }) => {
