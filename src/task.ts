@@ -123,10 +123,6 @@ export class Task<TValue = any> {
 
     this.promiseEnt = createControlledPromise<TValue>();
 
-    // if (this.promise) {
-    //   return this.promise;
-    // }
-
     const prefix = this.getPrefix(taskControl?.group?.name);
 
     if (this.beforeExec) {
@@ -153,10 +149,6 @@ export class Task<TValue = any> {
       });
     }
 
-    // if (this.promise) {
-    //   return this.promise;
-    // }
-
     const execCtx: ExecCtx = {
       task: this,
       parentResults: parentResults,
@@ -175,15 +167,6 @@ export class Task<TValue = any> {
     );
 
     this.promiseEnt.controls.resolve(execResult);
-
-    // const promise = this.exec(
-    //   createExecCtx({ parentResults, task: this, prefix, args })
-    // );
-
-    // this.promise =
-    //   promise instanceof Promise ? promise : Promise.resolve(promise);
-
-    // const value = await promise;
 
     for (const task of this.children) {
       const taskControlChild = getTaskControlFromUniversal(task, taskControl);
