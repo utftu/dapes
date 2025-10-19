@@ -113,9 +113,11 @@ export class Task<TValue = any> {
   async run({
     taskControl,
     args = "",
+    only = false,
   }: {
     taskControl?: TaskControl;
     args?: string;
+    only?: boolean;
   } = {}): Promise<TValue> {
     if (this.promiseEnt) {
       return this.promiseEnt.promise;
@@ -139,6 +141,9 @@ export class Task<TValue = any> {
     const parentResults: ParentResult[] = [];
 
     for (const task of this.parents) {
+      if (only) {
+        break;
+      }
       const taskControlChild = getTaskControlFromUniversal(task, taskControl);
       const result = taskControlChild.task.run({
         taskControl: taskControlChild,
@@ -169,6 +174,9 @@ export class Task<TValue = any> {
     this.promiseEnt.controls.resolve(execResult);
 
     for (const task of this.children) {
+      if (only) {
+        break;
+      }
       const taskControlChild = getTaskControlFromUniversal(task, taskControl);
       const result = taskControlChild.task.run({
         taskControl: taskControlChild,

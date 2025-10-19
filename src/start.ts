@@ -88,12 +88,18 @@ export const start = (group: Group) => {
 
   const parsedBlocks = parse<Block<Data>>(args, [globalBlock]);
 
-  const selectedPrasedBlock = parsedBlocks.at(-1)!;
+  let selectedPrasedBlock = parsedBlocks.at(-1)!;
+  let only = false;
+  if (selectedPrasedBlock.arg === "only") {
+    only = true;
+    selectedPrasedBlock = parsedBlocks.at(-2)!;
+  }
 
   const task = selectedPrasedBlock.block.data.task;
   const finalGroup = selectedPrasedBlock.block.data.group;
 
   return task.run({
+    only,
     taskControl: {
       task,
       needAwait: true,
