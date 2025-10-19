@@ -84,16 +84,16 @@ export const start = (group: Group) => {
     },
   });
 
-  const args = process.argv.slice(2);
+  let args = process.argv.slice(2);
+  let only = false;
+  if (args.at(-1) === "only") {
+    args = args.slice(0, -1);
+    only = true;
+  }
 
   const parsedBlocks = parse<Block<Data>>(args, [globalBlock]);
 
   let selectedPrasedBlock = parsedBlocks.at(-1)!;
-  let only = false;
-  if (selectedPrasedBlock.arg === "only") {
-    only = true;
-    selectedPrasedBlock = parsedBlocks.at(-2)!;
-  }
 
   const task = selectedPrasedBlock.block.data.task;
   const finalGroup = selectedPrasedBlock.block.data.group;
