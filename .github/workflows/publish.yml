@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # для OIDC / Trusted Publishing
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
