@@ -27,5 +27,4 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
-      - run: npm publish --provenance --access public
-        # NODE_AUTH_TOKEN убран — токен не нужен
+      - run: npm publish --provenance
