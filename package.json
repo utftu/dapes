@@ -2,7 +2,7 @@
   "name": "dapes",
   "module": "index.ts",
   "type": "module",
-  "version": "0.0.40",
+  "version": "0.0.41",
   "main": "dist/dapes.js",
   "types": "dist/types/dapes.d.ts",
   "scripts": {
@@ -20,5 +20,5 @@
     "vitest": "^3.2.4",
     "utftu": "^1.0.31",
     "vite": "^7.0.0"
-  },
+  }
 }
