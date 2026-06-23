@@ -1,15 +1,11 @@
-import { join } from "node:path";
+import { Task } from "./src/task.ts";
 
-export const getAbsolutePath = (relative: string, meta: ImportMeta) => {
-  const absolutePath = join(meta.dir, relative);
+const task = new Task({
+  name: "fail",
+  exec: async ({ command }) => {
+    // throw new Error("IT");
+    await command("exit 2");
+  },
+});
 
-  return absolutePath;
-};
-
-console.log("1", getAbsolutePath("./src/color.ts", import.meta));
-
-export const getAbsolutePath2 = (relative: string, meta: ImportMeta) => {
-  return new URL(relative, meta.url).pathname;
-};
-
-console.log("2", getAbsolutePath2("./src/color.t", import.meta));
+await task.run();

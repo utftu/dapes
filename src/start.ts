@@ -114,6 +114,9 @@ export const start = (group: Group) => {
 
 export const startIfMain = async (group: Group, meta: ImportMeta) => {
   if (meta.url === pathToFileURL(argv[1] || "").href) {
-    await start(group);
+    await start(group).catch((e: Error) => {
+      process.stderr.write(`\n${e.message}\n`);
+      process.exit(1);
+    });
   }
 };

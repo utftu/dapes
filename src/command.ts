@@ -6,7 +6,7 @@ import process from "node:process";
 const tee = async (
   read: ReadableStream,
   write: (text: string) => void,
-  prefix: string
+  prefix: string,
 ) => {
   const reader = read.getReader();
   let leftover = "";
@@ -114,19 +114,33 @@ export const execCommandForTaskMayError = async ({
   return resultPromise;
 };
 
+const codes = {
+  130: { reason: "SIGINT" },
+  137: { reason: "SIGKILL" },
+  143: { reason: "SIGTERM" },
+};
+
 export const execCommandForTask = async (
-  params: Parameters<typeof execCommandForTaskMayError>[0]
+  params: Parameters<typeof execCommandForTaskMayError>[0],
 ): ReturnType<typeof execCommandForTaskMayError> => {
   const result = await execCommandForTaskMayError(params);
-  if (result.spawnResult.exitCode === 130) {
-    console.log("Received SIGINT, exiting gracefully...");
-    process.exit(130);
+
+  if (result.spawnResult.exitCode! in codes) {
+    console.log(`Received ${codes[result.spawnResult.exitCode as 130].reason}`);
+    process.exit(result.spawnResult.exitCode);
   }
 
   if (result.spawnResult.exitCode !== 0) {
-    throw new Error(
-      `Command: ${params.command}, exitCode: ${result.spawnResult.exitCode}`
+    const err = new Error(
+      `Command: ${params.command}, exitCode: ${result.spawnResult.exitCode}`,
     );
+    const thisFile = import.meta.filename;
+    const caller = err.stack
+      ?.split("\n")
+      .slice(1)
+      .find((l) => !l.includes(thisFile));
+    if (caller) err.message += "\n" + caller.trim();
+    throw err;
   }
 
   return result;
