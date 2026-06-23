@@ -58,7 +58,6 @@ const getTaskControlFromUniversal = (
 export class Task<TValue = any> {
   name: string;
 
-  group?: Group;
   optionalArgs: boolean;
   description: string;
 
@@ -151,10 +150,21 @@ export class Task<TValue = any> {
       });
     }
 
-    const execResult = await this.exec(
-      createExecCtx({ parentResults, task: this, prefix, args }),
-    );
+    this.status = "running";
 
+    let execResult: TValue;
+    try {
+      execResult = await this.exec(
+        createExecCtx({ parentResults, task: this, prefix, args }),
+      );
+    } catch (e) {
+      this.status = "error";
+      this.promiseEnt.controls.reject(e);
+      this.promiseEnt.promise.catch(() => {});
+      throw e;
+    }
+
+    this.status = "finished";
     this.promiseEnt.controls.resolve(execResult);
 
     for (const task of this.children) {
