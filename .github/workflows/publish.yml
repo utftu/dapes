@@ -4,14 +4,12 @@ on:
   push:
     tags:
       - "*"
-  workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # для OIDC / Trusted Publishing
-      contents: read
 
     steps:
       - uses: actions/checkout@v4
