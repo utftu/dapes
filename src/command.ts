@@ -37,7 +37,7 @@ const teeStdout = (read: ReadableStream, prefix: string) => {
   return tee(read, (text) => process.stdout.write(text), prefix);
 };
 const teeStderr = (read: ReadableStream, prefix: string) => {
-  tee(read, (text) => process.stderr.write(text), prefix);
+  return tee(read, (text) => process.stderr.write(text), prefix);
 };
 
 export type ExecCommandStore = { spawnResult?: ReturnType<typeof spawn> };
@@ -135,11 +135,12 @@ export const execCommandForTask = async (
       `Command: ${params.command}, exitCode: ${result.spawnResult.exitCode}`,
     );
     const thisFile = import.meta.filename;
-    const caller = err.stack
-      ?.split("\n")
-      .slice(1)
-      .find((l) => !l.includes(thisFile));
-    if (caller) err.message += "\n" + caller.trim();
+    const callerFrames =
+      err.stack
+        ?.split("\n")
+        .slice(1)
+        .filter((l) => !l.includes(thisFile)) ?? [];
+    err.stack = `${err.message}\n${callerFrames.join("\n")}`;
     throw err;
   }
 

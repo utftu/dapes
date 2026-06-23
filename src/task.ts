@@ -4,7 +4,6 @@ import { execCommandNativeForTask } from "./command.native.ts";
 import { execCommandForTask } from "./command.ts";
 import type { Group } from "./group.ts";
 import type { Exec, ExecCtx, Unmount } from "./types.ts";
-import { resolve } from "bun";
 
 type ParentResult = { task: Task; result: any };
 
@@ -43,7 +42,7 @@ const createExecCtx = ({
 type TaskUniversal = Task | TaskControl;
 const getTaskControlFromUniversal = (
   taskUniversal: TaskUniversal,
-  parentTaskControl?: TaskControl
+  parentTaskControl?: TaskControl,
 ): TaskControl => {
   if (taskUniversal instanceof Task) {
     return {
@@ -73,9 +72,7 @@ export class Task<TValue = any> {
   unmounts: Unmount[] = [];
 
   abortController = new AbortController();
-  promise?: Promise<TValue>;
   promiseEnt: ReturnType<typeof createControlledPromise<TValue>> | undefined;
-  // runned = false;
 
   _colorStart = randomRgbTextStart();
 
@@ -134,7 +131,7 @@ export class Task<TValue = any> {
           task: this,
           prefix,
           args,
-        })
+        }),
       );
     }
 
@@ -154,21 +151,8 @@ export class Task<TValue = any> {
       });
     }
 
-    const execCtx: ExecCtx = {
-      task: this,
-      parentResults: parentResults,
-      command: (command: string, { env, cwd } = {}) =>
-        execCommandForTask({ command, env, ctx: execCtx, cwd }),
-      commandNative: (command: string, { env, cwd } = {}) =>
-        execCommandNativeForTask({ command, env, ctx: execCtx, cwd }),
-      prefix,
-      ctx: null as any,
-      args: args,
-    };
-    execCtx.ctx = execCtx;
-
     const execResult = await this.exec(
-      createExecCtx({ parentResults, task: this, prefix, args })
+      createExecCtx({ parentResults, task: this, prefix, args }),
     );
 
     this.promiseEnt.controls.resolve(execResult);
@@ -200,8 +184,8 @@ export class Task<TValue = any> {
 
     await Promise.all(
       this.parents.map((taskUniversal) =>
-        getTaskControlFromUniversal(taskUniversal).task.cancel()
-      )
+        getTaskControlFromUniversal(taskUniversal).task.cancel(),
+      ),
     );
   }
 
