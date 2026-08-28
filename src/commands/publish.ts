@@ -20,9 +20,11 @@ const createTimeMessage = () => {
 
 const gitPush = async ({
   message,
+  tag,
   ctx,
 }: {
   message?: string;
+  tag?: string;
   ctx: ExecCtx;
 }) => {
   // Формируем сообщение коммита с текущей датой, если не передан пользовательский message
@@ -46,6 +48,12 @@ const gitPush = async ({
       command: `git push ${remote} --all`,
       ctx,
     });
+    if (tag) {
+      await execCommandForTask({
+        command: `git push ${remote} ${tag}`,
+        ctx,
+      });
+    }
   }
 };
 
@@ -86,11 +94,12 @@ export const publishPackage = async ({
     version,
     ctx,
   });
+  const tag = `v${newVersion}`;
   await execCommandForTask({
-    command: `git tag ${newVersion}`,
+    command: `git tag ${tag}`,
     ctx,
   });
-  await gitPush({ ctx, message: newVersion });
+  await gitPush({ ctx, message: newVersion, tag });
   await runBuildIfExists({ pathToPackage, ctx });
   await execCommandForTask({
     command: `npm publish`,
