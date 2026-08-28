@@ -1,9 +1,8 @@
-import { file } from "bun";
-import { execCommandForTask, execCommandForTaskMayError } from "../command.ts";
-import { makeBlue } from "../color.ts";
+import { execCommandForTask, getGitRemotes } from "../command.ts";
+import { updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
 
-type Version = "major" | "minor" | "patch";
+type Version = VersionBump;
 
 const createTimeMessage = () => {
   const commitMessage = new Date().toLocaleString("ru-RU", {
@@ -15,42 +14,6 @@ const createTimeMessage = () => {
   });
 
   return commitMessage;
-};
-
-const updateVesion = async ({
-  pathToPackage,
-  version,
-  ctx,
-}: {
-  pathToPackage: string;
-  version: Version;
-  ctx: ExecCtx;
-}) => {
-  const filePackage = file(pathToPackage);
-
-  const content = await filePackage.json();
-  const [major, minor, patch] = content.version.split(".");
-  let versionNew!: string;
-
-  if (version === "patch") {
-    versionNew = `${major}.${minor}.${+patch + 1}`;
-  }
-  if (version === "minor") {
-    versionNew = `${major}.${+minor + 1}.0`;
-  }
-  if (version === "major") {
-    versionNew = `${+major + 1}.0.0`;
-  }
-
-  content.version = versionNew;
-
-  filePackage.write(JSON.stringify(content, null, 2));
-
-  process.stdout.write(
-    ctx.prefix + makeBlue(`update package ${pathToPackage}`) + "\n"
-  );
-
-  return versionNew;
 };
 
 const gitPush = async ({
@@ -75,12 +38,7 @@ const gitPush = async ({
     ctx,
   });
 
-  // Получаем список удаленных репозиториев
-  const { stdout } = await execCommandForTask({
-    command: "git remote",
-    ctx,
-  });
-  const remotes = stdout.trim().split("\n");
+  const remotes = await getGitRemotes({ ctx });
   for (const remote of remotes) {
     await execCommandForTask({
       command: `git push ${remote} --all`,
@@ -101,7 +59,7 @@ export const publishPackage = async ({
   ctx: ExecCtx;
 }) => {
   await gitPush({ ctx, message }).catch(() => {});
-  const newVersion = await updateVesion({
+  const { version: newVersion } = await updatePackageVersion({
     pathToPackage,
     version,
     ctx,

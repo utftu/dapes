@@ -120,6 +120,12 @@ const codes = {
   143: { reason: "SIGTERM" },
 };
 
+export const getGitRemotes = async ({ ctx }: { ctx: ExecCtx }) => {
+  const { stdout } = await execCommandForTask({ command: "git remote", ctx });
+
+  return stdout.trim().split("\n").filter(Boolean);
+};
+
 export const execCommandForTask = async (
   params: Parameters<typeof execCommandForTaskMayError>[0],
 ): ReturnType<typeof execCommandForTaskMayError> => {

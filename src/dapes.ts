@@ -4,6 +4,7 @@ import { start, startIfMain } from "./start.ts";
 import { readEnvFile, readEnvFileMerged } from "./env.ts";
 import { getAbsolutePath } from "./utils.ts";
 import { publishPackage } from "./commands/publish.ts";
+import { deployPackage } from "./commands/deploy.ts";
 
 export {
   Task,
@@ -15,4 +16,5 @@ export {
   readEnvFileMerged,
   getAbsolutePath,
   publishPackage,
+  deployPackage,
 };
