@@ -1,6 +1,7 @@
 import { file } from "bun";
 import { dirname } from "node:path";
 import { execCommandForTask, getGitRemotes } from "../command.ts";
+import { execCommandNativeForTask } from "../command.native.ts";
 import { updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
 
@@ -101,7 +102,7 @@ export const publishPackage = async ({
   });
   await gitPush({ ctx, message: newVersion, tag });
   await runBuildIfExists({ pathToPackage, ctx });
-  await execCommandForTask({
+  await execCommandNativeForTask({
     command: `npm publish`,
     ctx,
   });
