@@ -2,7 +2,7 @@
   "name": "dapes",
   "module": "index.ts",
   "type": "module",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "main": "dist/dapes.js",
   "types": "dist/types/dapes.d.ts",
   "bin": {
