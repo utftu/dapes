@@ -1,3 +1,5 @@
+import { file } from "bun";
+import { dirname } from "node:path";
 import { execCommandForTask, getGitRemotes } from "../command.ts";
 import { updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
@@ -47,6 +49,26 @@ const gitPush = async ({
   }
 };
 
+const runBuildIfExists = async ({
+  pathToPackage,
+  ctx,
+}: {
+  pathToPackage: string;
+  ctx: ExecCtx;
+}) => {
+  const content = await file(pathToPackage).json();
+
+  if (!content.scripts?.build) {
+    return;
+  }
+
+  await execCommandForTask({
+    command: "bun run build",
+    cwd: dirname(pathToPackage),
+    ctx,
+  });
+};
+
 export const publishPackage = async ({
   message = "",
   pathToPackage = "package.json",
@@ -69,6 +91,7 @@ export const publishPackage = async ({
     ctx,
   });
   await gitPush({ ctx, message: newVersion });
+  await runBuildIfExists({ pathToPackage, ctx });
   await execCommandForTask({
     command: `npm publish`,
     ctx,

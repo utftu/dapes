@@ -3,16 +3,9 @@ import { Group } from "./src/group.ts";
 import { startIfMain } from "./src/start.ts";
 import { Task } from "./src/task.ts";
 
-const types = new Task({
-  name: "types",
-  exec: async ({ command }) => {
-    await command("npm run types");
-  },
-});
-
 const build = new Task({
   name: "build",
-  parents: [types],
+  parents: [],
   exec: async ({ command }) => {
     await command("npm run build");
   },
@@ -20,7 +13,7 @@ const build = new Task({
 
 const publish = new Task({
   name: "publish",
-  parents: [build],
+  parents: [],
   beforeExec({ command }) {
     command("rm -rf dist");
   },
@@ -35,7 +28,7 @@ const publish = new Task({
 
 const group = new Group({
   name: "",
-  tasks: [build, types, publish],
+  tasks: [build, publish],
 });
 
 await startIfMain(group, import.meta);
