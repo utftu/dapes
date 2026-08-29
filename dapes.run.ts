@@ -1,4 +1,4 @@
-import { publishPackageLocal } from "./src/dapes.ts";
+import { publishPackageLocal, releasePackage } from "./src/dapes.ts";
 import { Group } from "./src/group.ts";
 import { startIfMain } from "./src/start/start.ts";
 import { Task } from "./src/task/task.ts";
@@ -17,15 +17,15 @@ const publishLocal = new Task({
 });
 
 const publish = new Task({
-  name: "publish",
-  exec: ({ ctx }) => {
-    await;
+  name: "release",
+  exec: async ({ ctx }) => {
+    await releasePackage({ ctx });
   },
 });
 
 const group = new Group({
   name: "",
-  tasks: [publishLocal],
+  tasks: [publish, publishLocal],
 });
 
 await startIfMain(group, import.meta);
