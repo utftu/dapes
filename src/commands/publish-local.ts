@@ -57,7 +57,7 @@ const runBuildIfExists = async ({
   });
 };
 
-export const publishPackage = async ({
+export const publishPackageLocal = async ({
   message = "",
   pathToPackage = "package.json",
   version = "patch",

@@ -1,34 +1,31 @@
-import { publishPackage } from "./src/dapes.ts";
+import { publishPackageLocal } from "./src/dapes.ts";
 import { Group } from "./src/group.ts";
 import { startIfMain } from "./src/start/start.ts";
 import { Task } from "./src/task/task.ts";
 
-const build = new Task({
-  name: "build",
-  parents: [],
-  exec: async ({ command }) => {
-    await command("npm run build");
-  },
-});
-
-const publish = new Task({
-  name: "publish",
+const publishLocal = new Task({
+  name: "publish_local",
   parents: [],
   beforeExec({ command }) {
     command("rm -rf dist");
   },
   exec: async ({ ctx }) => {
-    await publishPackage({
-      pathToPackage: "./package.json",
-      version: "patch",
+    await publishPackageLocal({
       ctx,
     });
   },
 });
 
+const publish = new Task({
+  name: "publish",
+  exec: ({ ctx }) => {
+    await;
+  },
+});
+
 const group = new Group({
   name: "",
-  tasks: [build, publish],
+  tasks: [publishLocal],
 });
 
 await startIfMain(group, import.meta);

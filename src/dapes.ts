@@ -3,7 +3,7 @@ import { Group } from "./group.ts";
 import { start, startIfMain } from "./start/start.ts";
 import { readEnvFile, readEnvFileMerged } from "./env.ts";
 import { getAbsolutePath } from "./utils.ts";
-import { publishPackage } from "./commands/publish-local.ts";
+import { publishPackageLocal } from "./commands/publish-local.ts";
 import { releasePackage } from "./commands/release-mono.ts";
 
 export {
@@ -15,6 +15,6 @@ export {
   readEnvFile,
   readEnvFileMerged,
   getAbsolutePath,
-  publishPackage,
+  publishPackageLocal,
   releasePackage,
 };
