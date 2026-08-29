@@ -1,7 +1,7 @@
 import { publishPackage } from "./src/dapes.ts";
 import { Group } from "./src/group.ts";
-import { startIfMain } from "./src/start.ts";
-import { Task } from "./src/task.ts";
+import { startIfMain } from "./src/start/start.ts";
+import { Task } from "./src/task/task.ts";
 
 const build = new Task({
   name: "build",

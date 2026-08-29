@@ -1,5 +1,5 @@
 import { expect, test, beforeAll } from "bun:test";
-import { Task } from "./task.ts";
+import { Task } from "../task/task.ts";
 
 if (!process.env.DEBUG) {
   const noop = () => false;

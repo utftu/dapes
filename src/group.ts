@@ -1,4 +1,4 @@
-import type { Task, TaskControl } from "./task.ts";
+import type { Task, TaskControl } from "./task/task.ts";
 
 export class Group {
   name: string;

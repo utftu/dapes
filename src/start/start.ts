@@ -1,6 +1,6 @@
-import type { Group } from "./group.ts";
+import type { Group } from "../group.ts";
 import { Block, parse, globalArg } from "argblock";
-import { Task } from "./task.ts";
+import { Task } from "../task/task.ts";
 import { argv, pathToFileURL } from "bun";
 
 const defaultSelectTask = new Task<any>({

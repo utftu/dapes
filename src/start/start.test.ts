@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "bun:test";
-import { Group } from "./group.ts";
-import { Task } from "./task.ts";
+import { Group } from "../group.ts";
+import { Task } from "../task/task.ts";
 import { start } from "./start.ts";
 
 const build = new Task({

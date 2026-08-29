@@ -1,6 +1,6 @@
-import type { execCommandNativeForTask } from "./command.native.ts";
-import type { execCommandForTask } from "./command.ts";
-import type { Task } from "./task.ts";
+import type { execCommandNativeForTask } from "./exec/command.native.ts";
+import type { execCommandForTask } from "./exec/command.ts";
+import type { Task } from "./task/task.ts";
 
 export type Unmount = () => void | Promise<void>;
 
@@ -11,11 +11,11 @@ export type ExecCtx = {
   parentResults: ExecResulCtx[];
   command: (
     command: string,
-    config?: { env?: Record<string, any>; cwd?: string }
+    config?: { env?: Record<string, any>; cwd?: string },
   ) => ReturnType<typeof execCommandForTask>;
   commandNative: (
     command: string,
-    config?: { env?: Record<string, any>; cwd?: string }
+    config?: { env?: Record<string, any>; cwd?: string },
   ) => ReturnType<typeof execCommandNativeForTask>;
   prefix: string;
   ctx: ExecCtx;

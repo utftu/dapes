@@ -1,6 +1,6 @@
-import { Group } from "./group.ts";
+import { Group } from "../group.ts";
 import { startIfMain } from "./start.ts";
-import { Task } from "./task.ts";
+import { Task } from "../task/task.ts";
 
 const build = new Task({
   name: "build",

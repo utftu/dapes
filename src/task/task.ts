@@ -1,9 +1,9 @@
 import { createControlledPromise } from "utftu";
-import { randomRgbTextStart } from "./color.ts";
-import { execCommandNativeForTask } from "./command.native.ts";
-import { execCommandForTask } from "./command.ts";
-import type { Group } from "./group.ts";
-import type { Exec, ExecCtx, Unmount } from "./types.ts";
+import { randomRgbTextStart } from "../color.ts";
+import { execCommandNativeForTask } from "../exec/command.native.ts";
+import { execCommandForTask } from "../exec/command.ts";
+import type { Group } from "../group.ts";
+import type { Exec, ExecCtx, Unmount } from "../types.ts";
 
 type ParentResult = { task: Task; result: any };
 

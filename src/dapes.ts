@@ -1,10 +1,10 @@
-import { Task, type TaskControl } from "./task.ts";
+import { Task, type TaskControl } from "./task/task.ts";
 import { Group } from "./group.ts";
-import { start, startIfMain } from "./start.ts";
+import { start, startIfMain } from "./start/start.ts";
 import { readEnvFile, readEnvFileMerged } from "./env.ts";
 import { getAbsolutePath } from "./utils.ts";
-import { publishPackage } from "./commands/publish.ts";
-import { deployPackage } from "./commands/deploy.ts";
+import { publishPackage } from "./commands/publish-local.ts";
+import { releasePackage } from "./commands/release-mono.ts";
 
 export {
   Task,
@@ -16,5 +16,5 @@ export {
   readEnvFileMerged,
   getAbsolutePath,
   publishPackage,
-  deployPackage,
+  releasePackage,
 };

@@ -1,6 +1,6 @@
 import { spawn } from "bun";
-import type { Envs, ExecCtx } from "./types.ts";
-import { makeGreen } from "./color.ts";
+import type { Envs, ExecCtx } from "../types.ts";
+import { makeGreen } from "../color.ts";
 import process from "node:process";
 
 const tee = async (
@@ -118,12 +118,6 @@ const codes = {
   130: { reason: "SIGINT" },
   137: { reason: "SIGKILL" },
   143: { reason: "SIGTERM" },
-};
-
-export const getGitRemotes = async ({ ctx }: { ctx: ExecCtx }) => {
-  const { stdout } = await execCommandForTask({ command: "git remote", ctx });
-
-  return stdout.trim().split("\n").filter(Boolean);
 };
 
 export const execCommandForTask = async (

@@ -1,7 +1,8 @@
 import { file } from "bun";
 import { dirname } from "node:path";
-import { execCommandForTask, getGitRemotes } from "../command.ts";
-import { execCommandNativeForTask } from "../command.native.ts";
+import { execCommandForTask } from "../exec/command.ts";
+import { execCommandNativeForTask } from "../exec/command.native.ts";
+import { gitAdd, gitCommit, gitPushRemotes, gitTag } from "../git.ts";
 import { updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
 
@@ -19,7 +20,7 @@ const createTimeMessage = () => {
   return commitMessage;
 };
 
-const gitPush = async ({
+const commitAndPush = async ({
   message,
   tag,
   ctx,
@@ -31,31 +32,9 @@ const gitPush = async ({
   // Формируем сообщение коммита с текущей датой, если не передан пользовательский message
   const commitMessage = message || createTimeMessage();
 
-  // git add .
-  await execCommandForTask({
-    command: "git add .",
-    ctx,
-  });
-
-  // git commit
-  await execCommandForTask({
-    command: `git commit -m "${commitMessage}"`,
-    ctx,
-  });
-
-  const remotes = await getGitRemotes({ ctx });
-  for (const remote of remotes) {
-    await execCommandForTask({
-      command: `git push ${remote} --all`,
-      ctx,
-    });
-    if (tag) {
-      await execCommandForTask({
-        command: `git push ${remote} ${tag}`,
-        ctx,
-      });
-    }
-  }
+  await gitAdd({ ctx });
+  await gitCommit({ message: commitMessage, ctx });
+  await gitPushRemotes({ all: true, tag, ctx });
 };
 
 const runBuildIfExists = async ({
@@ -89,18 +68,15 @@ export const publishPackage = async ({
   version?: Version;
   ctx: ExecCtx;
 }) => {
-  await gitPush({ ctx, message }).catch(() => {});
+  await commitAndPush({ ctx, message }).catch(() => {});
   const { version: newVersion } = await updatePackageVersion({
     pathToPackage,
     version,
     ctx,
   });
   const tag = `v${newVersion}`;
-  await execCommandForTask({
-    command: `git tag ${tag}`,
-    ctx,
-  });
-  await gitPush({ ctx, message: newVersion, tag });
+  await gitTag({ tag, ctx });
+  await commitAndPush({ ctx, message: newVersion, tag });
   await runBuildIfExists({ pathToPackage, ctx });
   await execCommandNativeForTask({
     command: `npm publish`,

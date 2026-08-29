@@ -1,5 +1,5 @@
 import { spawn } from "bun";
-import type { Envs, ExecCtx } from "./types.ts";
+import type { Envs, ExecCtx } from "../types.ts";
 
 export type ExecCommandStore = { spawnResult?: ReturnType<typeof spawn> };
 
@@ -68,7 +68,7 @@ export const execCommandNativeForTask = async ({
 
   if (result.spawnResult.exitCode !== 0) {
     throw new Error(
-      `Command: ${command}, exitCode: ${result.spawnResult.exitCode}`
+      `Command: ${command}, exitCode: ${result.spawnResult.exitCode}`,
     );
   }
 
