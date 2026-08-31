@@ -55,7 +55,7 @@ const execCommandRaw = async ({
   env?: Envs;
   cwd?: string;
   prefix: string;
-  signal: AbortSignal;
+  signal?: AbortSignal;
 }) => {
   process.stdout.write(prefix + makeGreen(command) + "\n");
 
@@ -95,19 +95,21 @@ export const execCommandForTaskMayError = async ({
   command: string;
   env?: Envs;
   cwd?: string;
-  ctx: ExecCtx;
+  ctx?: ExecCtx;
 }) => {
   const store: ExecCommandStore = {};
+  const signal = ctx?.task.abortController.signal;
+
   const resultPromise = execCommandRaw({
     command,
     store,
-    signal: ctx.task.abortController.signal,
+    signal,
     env,
-    prefix: ctx.prefix,
+    prefix: ctx?.prefix ?? "",
     cwd,
   });
 
-  ctx.task.abortController.signal.addEventListener("abort", () => {
+  signal?.addEventListener("abort", () => {
     store.spawnResult!.kill();
   });
 

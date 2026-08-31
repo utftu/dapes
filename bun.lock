@@ -5,7 +5,7 @@
       "name": "dapes",
       "devDependencies": {
         "@types/bun": "latest",
-        "argblock": "^0.0.11",
+        "argblock": "^0.0.12",
         "ramm": "^0.0.29",
         "typescript": "^5",
         "utftu": "^1.0.31",
@@ -131,7 +131,7 @@
 
     "@vitest/utils": ["@vitest/utils@3.2.4", "", { "dependencies": { "@vitest/pretty-format": "3.2.4", "loupe": "^3.1.4", "tinyrainbow": "^2.0.0" } }, "sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA=="],
 
-    "argblock": ["argblock@0.0.11", "", {}, "sha512-MXqiWxJoePxACjt4Z4pWqgnZ+x4gu+DOHorg/6rHAoSgS5SFfiiIYfQZ37UJMO4sDqLMxtNKMxk6DSPsEUALbg=="],
+    "argblock": ["argblock@0.0.12", "", {}, "sha512-/ZeHxTsgVlkxOFFOZY7lbSR81x4I61r5/KWVmo4+yKfQkZST+12PlLph23K+XeDeiYO0tPrzgxZpXYv+uOktDg=="],
 
     "assertion-error": ["assertion-error@2.0.1", "", {}, "sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA=="],
 

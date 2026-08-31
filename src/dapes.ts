@@ -4,7 +4,8 @@ import { start, startIfMain } from "./start/start.ts";
 import { readEnvFile, readEnvFileMerged } from "./env.ts";
 import { getAbsolutePath } from "./utils.ts";
 import { publishPackageLocal } from "./commands/publish-local.ts";
-import { releasePackage } from "./commands/release-mono.ts";
+import { releasePackage } from "./commands/release.ts";
+import { releasePackageMono } from "./commands/release-mono.ts";
 
 export {
   Task,
@@ -17,4 +18,5 @@ export {
   getAbsolutePath,
   publishPackageLocal,
   releasePackage,
+  releasePackageMono,
 };

@@ -1,17 +1,30 @@
 #!/usr/bin/env bun
 import { writePublishGithubWorkflow } from "./commands/publish-github.ts";
 import { writePublishGithubMonoWorkflow } from "./commands/publish-github-mono.ts";
+import { releasePackage } from "./commands/release.ts";
+import { releasePackageMono } from "./commands/release-mono.ts";
 import { Cli } from "argblock";
 
-const [command] = process.argv.slice(2);
-
-const cli = new Cli().command("release");
-
-// if (command === "publish_github") {
-//   await writePublishGithubWorkflow();
-// } else if (command === "publish_github_mono") {
-//   await writePublishGithubMonoWorkflow();
-// } else if () else {
-//   console.log("Usage: dapes publish_github | publish_github_mono");
-//   process.exit(1);
-// }
+new Cli()
+  .command("publish_github", "Add a GitHub Actions publish workflow")
+  .action(async () => {
+    await writePublishGithubWorkflow();
+  })
+  .command(
+    "publish_github_mono",
+    "Add a GitHub Actions monorepo publish workflow",
+  )
+  .action(async () => {
+    await writePublishGithubMonoWorkflow();
+  })
+  .command("release", "Bump package version, tag and push")
+  .action(async () => {
+    await releasePackage();
+  })
+  .command("release_mono <package>", "Bump package version, tag and push")
+  .action(async (parsedBlock) => {
+    await releasePackageMono({
+      pathToPackage: `./packages/${parsedBlock.positionals.package}/package.json`,
+    });
+  })
+  .run(process.argv.slice(2));

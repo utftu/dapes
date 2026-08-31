@@ -19,7 +19,7 @@ export const updatePackageVersion = async ({
 }: {
   pathToPackage: string;
   version: VersionBump;
-  ctx: ExecCtx;
+  ctx?: ExecCtx;
 }) => {
   const filePackage = file(pathToPackage);
   const content = await filePackage.json();
@@ -30,7 +30,7 @@ export const updatePackageVersion = async ({
   await filePackage.write(JSON.stringify(content, null, 2));
 
   process.stdout.write(
-    ctx.prefix + makeBlue(`update package ${pathToPackage}`) + "\n",
+    (ctx?.prefix ?? "") + makeBlue(`update package ${pathToPackage}`) + "\n",
   );
 
   return { name: content.name as string, version: versionNew };
