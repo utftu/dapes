@@ -1,8 +1,11 @@
 {
   "name": "dapes",
-  "module": "index.ts",
   "type": "module",
   "version": "0.0.48",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/utftu/dapes"
+  },
   "main": "dist/dapes.js",
   "types": "dist/types/dapes.d.ts",
   "bin": {
