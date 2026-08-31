@@ -24,10 +24,10 @@ const convertGroupToBlock = (group: Group) => {
     if (task.optionalArgs === true) {
       const anyBlock = new Block<Data>({
         arg: task.name,
-        matcher: (args, i) => {
+        matcher: (elems) => {
           return {
             match: true,
-            jumpNext: args.length - i,
+            elems: [],
           };
         },
         description: task.description,
