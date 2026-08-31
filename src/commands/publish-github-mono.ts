@@ -54,7 +54,7 @@ export const writePublishGithubMonoWorkflow = async ({
   cwd?: string;
 } = {}) => {
   const dir = join(cwd, ".github", "workflows");
-  const path = join(dir, "publish-mono.yml");
+  const path = join(dir, "publish.yml");
 
   await mkdir(dir, { recursive: true });
   await file(path).write(WORKFLOW);
