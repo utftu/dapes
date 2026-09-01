@@ -12,6 +12,16 @@ export const bumpSemver = (version: string, bump: VersionBump) => {
   return `${major}.${minor}.${+patch + 1}`;
 };
 
+export const readPackageInfo = async ({
+  pathToPackage,
+}: {
+  pathToPackage: string;
+}) => {
+  const content = await file(pathToPackage).json();
+
+  return { name: content.name as string, version: content.version as string };
+};
+
 export const updatePackageVersion = async ({
   pathToPackage,
   version,

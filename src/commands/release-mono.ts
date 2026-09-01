@@ -1,6 +1,6 @@
 import { dirname } from "node:path";
-import { gitAdd, gitCommit, gitPushRemotes, gitTag } from "../git.ts";
-import { updatePackageVersion, type VersionBump } from "../version.ts";
+import { gitAdd, gitCommit, gitDeleteTag, gitPushRemotes, gitTag } from "../git.ts";
+import { readPackageInfo, updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
 
 export const releasePackageMono = async ({
@@ -24,6 +24,23 @@ export const releasePackageMono = async ({
 
   await gitAdd({ path: packageDir, ctx });
   await gitCommit({ message: tag, ctx });
+  await gitTag({ tag, ctx });
+  await gitPushRemotes({ tag, ctx });
+
+  return tag;
+};
+
+export const releasePackageMonoRetry = async ({
+  pathToPackage,
+  ctx,
+}: {
+  pathToPackage: string;
+  ctx?: ExecCtx;
+}) => {
+  const { name, version } = await readPackageInfo({ pathToPackage });
+  const tag = `${name}@v${version}`;
+
+  await gitDeleteTag({ tag, ctx });
   await gitTag({ tag, ctx });
   await gitPushRemotes({ tag, ctx });
 

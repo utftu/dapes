@@ -37,6 +37,26 @@ export const gitTag = async ({
   await execCommandForTask({ command: `git tag ${tag}`, ctx });
 };
 
+export const gitDeleteTag = async ({
+  tag,
+  ctx,
+}: {
+  tag: string;
+  ctx?: ExecCtx;
+}) => {
+  await execCommandForTask({ command: `git tag -d ${tag}`, ctx }).catch(
+    () => {},
+  );
+
+  const remotes = await getGitRemotes({ ctx });
+  for (const remote of remotes) {
+    await execCommandForTask({
+      command: `git push ${remote} :refs/tags/${tag}`,
+      ctx,
+    }).catch(() => {});
+  }
+};
+
 export const gitPushRemotes = async ({
   all = false,
   tag,

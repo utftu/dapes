@@ -2,7 +2,10 @@
 import { writePublishGithubWorkflow } from "./commands/publish-github.ts";
 import { writePublishGithubMonoWorkflow } from "./commands/publish-github-mono.ts";
 import { releasePackage } from "./commands/release.ts";
-import { releasePackageMono } from "./commands/release-mono.ts";
+import {
+  releasePackageMono,
+  releasePackageMonoRetry,
+} from "./commands/release-mono.ts";
 import { Cli } from "argblock";
 
 new Cli()
@@ -24,6 +27,15 @@ new Cli()
   .command("release_mono <package>", "Bump package version, tag and push")
   .action(async (parsedBlock) => {
     await releasePackageMono({
+      pathToPackage: `./packages/${parsedBlock.positionals.package}/package.json`,
+    });
+  })
+  .command(
+    "release_mono_re <package>",
+    "Retag current package version and re-push (no version bump)",
+  )
+  .action(async (parsedBlock) => {
+    await releasePackageMonoRetry({
       pathToPackage: `./packages/${parsedBlock.positionals.package}/package.json`,
     });
   })
