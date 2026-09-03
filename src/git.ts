@@ -81,3 +81,19 @@ export const gitPushRemotes = async ({
     }
   }
 };
+
+export const gitCommitAndPush = async ({
+  message,
+  tag,
+  all = false,
+  ctx,
+}: {
+  message: string;
+  tag?: string;
+  all?: boolean;
+  ctx?: ExecCtx;
+}) => {
+  await gitAdd({ ctx });
+  await gitCommit({ message, ctx });
+  await gitPushRemotes({ all, tag, ctx });
+};

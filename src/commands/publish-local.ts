@@ -2,7 +2,7 @@ import { file } from "bun";
 import { dirname } from "node:path";
 import { execCommandForTask } from "../exec/command.ts";
 import { execCommandNativeForTask } from "../exec/command.native.ts";
-import { gitAdd, gitCommit, gitPushRemotes, gitTag } from "../git.ts";
+import { gitCommitAndPush, gitTag } from "../git.ts";
 import { updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
 
@@ -32,9 +32,7 @@ const commitAndPush = async ({
   // Формируем сообщение коммита с текущей датой, если не передан пользовательский message
   const commitMessage = message || createTimeMessage();
 
-  await gitAdd({ ctx });
-  await gitCommit({ message: commitMessage, ctx });
-  await gitPushRemotes({ all: true, tag, ctx });
+  await gitCommitAndPush({ message: commitMessage, all: true, tag, ctx });
 };
 
 const runBuildIfExists = async ({

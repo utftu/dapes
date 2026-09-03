@@ -1,5 +1,12 @@
 import { dirname } from "node:path";
-import { gitAdd, gitCommit, gitDeleteTag, gitPushRemotes, gitTag } from "../git.ts";
+import {
+  gitAdd,
+  gitCommit,
+  gitCommitAndPush,
+  gitDeleteTag,
+  gitPushRemotes,
+  gitTag,
+} from "../git.ts";
 import { readPackageInfo, updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
 
@@ -39,6 +46,8 @@ export const releasePackageMonoRetry = async ({
 }) => {
   const { name, version } = await readPackageInfo({ pathToPackage });
   const tag = `${name}@v${version}`;
+
+  await gitCommitAndPush({ message: tag, ctx }).catch(() => {});
 
   await gitDeleteTag({ tag, ctx });
   await gitTag({ tag, ctx });

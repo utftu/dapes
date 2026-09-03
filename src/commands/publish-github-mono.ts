@@ -33,7 +33,7 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
-      - run: bunx tsc --noEmit
+      - run: bunx tsc --project tsconfig.types.json --noEmit
         working-directory: \${{ steps.pkg.outputs.dir }}
 
       - run: bun test
