@@ -68,9 +68,17 @@ export const execCommandNativeForTask = async ({
   }
 
   if (result.spawnResult.exitCode !== 0) {
-    throw new Error(
+    const err = new Error(
       `Command: ${command}, exitCode: ${result.spawnResult.exitCode}`,
     );
+    const thisFile = import.meta.filename;
+    const callerFrames =
+      err.stack
+        ?.split("\n")
+        .slice(1)
+        .filter((l) => !l.includes(thisFile)) ?? [];
+    err.stack = `${err.message}\n${callerFrames.join("\n")}`;
+    throw err;
   }
 
   return resultPromise;
