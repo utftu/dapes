@@ -20,7 +20,7 @@ const createTimeMessage = () => {
   return commitMessage;
 };
 
-const commitAndPush = async ({
+export const commitAndPush = async ({
   message,
   tag,
   ctx,
