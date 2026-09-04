@@ -27,7 +27,7 @@ const commitAndPush = async ({
 }: {
   message?: string;
   tag?: string;
-  ctx: ExecCtx;
+  ctx?: ExecCtx;
 }) => {
   // Формируем сообщение коммита с текущей датой, если не передан пользовательский message
   const commitMessage = message || createTimeMessage();
@@ -40,7 +40,7 @@ const runBuildIfExists = async ({
   ctx,
 }: {
   pathToPackage: string;
-  ctx: ExecCtx;
+  ctx?: ExecCtx;
 }) => {
   const content = await file(pathToPackage).json();
 
@@ -55,7 +55,7 @@ const runBuildIfExists = async ({
   });
 };
 
-export const publishPackageLocal = async ({
+export const publishPackage = async ({
   message = "",
   pathToPackage = "package.json",
   version = "patch",
@@ -64,8 +64,8 @@ export const publishPackageLocal = async ({
   message?: string;
   pathToPackage?: string;
   version?: Version;
-  ctx: ExecCtx;
-}) => {
+  ctx?: ExecCtx;
+} = {}) => {
   await commitAndPush({ ctx, message }).catch(() => {});
   const { version: newVersion } = await updatePackageVersion({
     pathToPackage,

@@ -1,4 +1,4 @@
-import { publishPackageLocal, releasePackage } from "./src/dapes.ts";
+import { publishPackage, releasePackage } from "./src/dapes.ts";
 import { Group } from "./src/group.ts";
 import { startIfMain } from "./src/start/start.ts";
 import { Task } from "./src/task/task.ts";
@@ -10,7 +10,7 @@ const publishLocal = new Task({
     command("rm -rf dist");
   },
   exec: async ({ ctx }) => {
-    await publishPackageLocal({
+    await publishPackage({
       ctx,
     });
   },
