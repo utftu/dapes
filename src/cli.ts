@@ -2,6 +2,7 @@
 import { writePublishGithubWorkflow } from "./commands/publish-github.ts";
 import { writePublishGithubMonoWorkflow } from "./commands/publish-github-mono.ts";
 import { publishPackage } from "./commands/publish.ts";
+import { publishPackageMono } from "./commands/publish-mono.ts";
 import { releasePackage } from "./commands/release.ts";
 import {
   releasePackageMono,
@@ -13,6 +14,12 @@ new Cli()
   .command("publish", "Bump version, tag, push and publish to npm")
   .action(async () => {
     await publishPackage();
+  })
+  .command("publish_mono <package>", "Bump version, tag, push and publish package")
+  .action(async (parsedBlock) => {
+    await publishPackageMono({
+      pathToPackage: `./packages/${parsedBlock.positionals.package}/package.json`,
+    });
   })
   .command("publish_github", "Add a GitHub Actions publish workflow")
   .action(async () => {

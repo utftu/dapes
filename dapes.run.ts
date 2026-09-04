@@ -4,7 +4,7 @@ import { startIfMain } from "./src/start/start.ts";
 import { Task } from "./src/task/task.ts";
 
 const publishLocal = new Task({
-  name: "publish_local",
+  name: "publish",
   parents: [],
   beforeExec({ command }) {
     command("rm -rf dist");

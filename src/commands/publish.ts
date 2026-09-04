@@ -35,7 +35,7 @@ const commitAndPush = async ({
   await gitCommitAndPush({ message: commitMessage, all: true, tag, ctx });
 };
 
-const runBuildIfExists = async ({
+export const runBuildIfExists = async ({
   pathToPackage,
   ctx,
 }: {
