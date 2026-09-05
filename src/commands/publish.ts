@@ -67,6 +67,7 @@ export const publishPackage = async ({
   ctx?: ExecCtx;
 } = {}) => {
   await commitAndPush({ ctx, message }).catch(() => {});
+  await runBuildIfExists({ pathToPackage, ctx });
   const { version: newVersion } = await updatePackageVersion({
     pathToPackage,
     version,
@@ -75,7 +76,6 @@ export const publishPackage = async ({
   const tag = `v${newVersion}`;
   await gitTag({ tag, ctx });
   await commitAndPush({ ctx, message: newVersion, tag });
-  await runBuildIfExists({ pathToPackage, ctx });
   await execCommandNativeForTask({
     command: `npm publish`,
     ctx,
