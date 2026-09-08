@@ -1,9 +1,7 @@
-import { dirname } from "node:path";
-import { gitTag } from "../git.ts";
+import { createTimeMessage, gitCommitAndPush, gitTag } from "../git.ts";
+import { publishToNpm, runBuildIfExists } from "../npm.ts";
 import { updatePackageVersion, type VersionBump } from "../version.ts";
 import type { ExecCtx } from "../types.ts";
-import { execCommandNativeForTask } from "../exec/command.native.ts";
-import { commitAndPush, runBuildIfExists } from "./publish.ts";
 
 export const publishPackageMono = async ({
   message = "",
@@ -16,10 +14,14 @@ export const publishPackageMono = async ({
   version?: VersionBump;
   ctx?: ExecCtx;
 }) => {
-  const packageDir = dirname(pathToPackage);
+  await gitCommitAndPush({
+    message: message || createTimeMessage(),
+    all: true,
+    ctx,
+  }).catch(() => {});
 
-  await commitAndPush({ ctx, message }).catch(() => {});
   await runBuildIfExists({ pathToPackage, ctx });
+
   const { name, version: newVersion } = await updatePackageVersion({
     pathToPackage,
     version,
@@ -29,13 +31,8 @@ export const publishPackageMono = async ({
   const tag = `${name}@v${newVersion}`;
 
   await gitTag({ tag, ctx });
-  await commitAndPush({ ctx, message: newVersion, tag });
-
-  await execCommandNativeForTask({
-    command: "npm publish",
-    cwd: packageDir,
-    ctx,
-  });
+  await gitCommitAndPush({ message: newVersion, all: true, tag, ctx });
+  await publishToNpm({ pathToPackage, ctx });
 
   return tag;
 };

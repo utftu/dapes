@@ -1,6 +1,18 @@
 import { execCommandForTask } from "./exec/command.ts";
 import type { ExecCtx } from "./types.ts";
 
+export const createTimeMessage = () => {
+  const message = new Date().toLocaleString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return message;
+};
+
 export const getGitRemotes = async ({ ctx }: { ctx?: ExecCtx }) => {
   const { stdout } = await execCommandForTask({ command: "git remote", ctx });
 
