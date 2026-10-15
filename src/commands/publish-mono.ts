@@ -31,7 +31,7 @@ export const publishPackageMono = async ({
   const tag = `${name}@v${newVersion}`;
 
   await gitTag({ tag, ctx });
-  await gitCommitAndPush({ message: newVersion, all: true, tag, ctx });
+  await gitCommitAndPush({ message: tag, all: true, tag, ctx });
   await publishToNpm({ pathToPackage, ctx });
 
   return tag;
