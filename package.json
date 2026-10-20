@@ -20,7 +20,10 @@
     "build:types": "tsc --project tsconfig.types.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
   ],
   "devDependencies": {
     "@types/bun": "latest",
