@@ -2,6 +2,9 @@
   "name": "dapes",
   "type": "module",
   "version": "0.0.62",
+  "description": "Task runner and release tool for Bun projects",
+  "license": "MIT",
+  "author": "Aleksey Malyuta (https://github.com/utftu)",
   "repository": {
     "type": "git",
     "url": "https://github.com/utftu/dapes"
